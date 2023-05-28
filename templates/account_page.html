@@ -1,0 +1,19 @@
+<html>
+
+   <body>
+      {% if first_name %}
+         Hello {{first_name}}.
+      {% else %}
+         Hello.
+      {% endif %}
+   </body>
+   <p></p>
+   Account number: <b>{{account_number}}</b>
+   <p></p>
+   Your account balance: <b>${{balance}}</b>
+   <p></p>
+   <form method="get" action="/logout">
+    <input type="submit" value="Logout">
+    </form> 
+     
+</html>
