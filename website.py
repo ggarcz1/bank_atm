@@ -1,4 +1,4 @@
-from flask import Flask, session, render_template, redirect, request, url_for, flash
+from flask import Flask, session, render_template, redirect, request, url_for
 import datetime
 import sqlite3
 
@@ -52,17 +52,28 @@ def logged_in(username):
 def create_account():
     if request.method == 'POST':
         values = [request.form['username'], request.form['password'], request.form['email']]
-        if len(values[0]) == 0 or len(values[1]) == 0 or len(values[2]) == 0:
-            return render_template('create_account.html')
+        if len(values[0]) == 0:
+            return render_template('create_account.html', error='Username Field cannot be blank')
+        elif len(values[1]) == 0:
+            return render_template('create_account.html', error='Password Field cannot be blank')
+        elif len(values[2]) == 0:
+            return render_template('create_account.html', error='Email Field cannot be blank')
         
         sqliteConnection = sqlite3.connect('users.db')
         cursor = sqliteConnection.cursor()
-        cursor.execute('INSERT INTO users VALUES (?, ?, ?)',values)
-        sqliteConnection.commit()
-        sqliteConnection.close()
-        return redirect(url_for('account_created_successfully'))
+        # check if user exists in the database already
+        cursor.execute('SELECT password FROM users WHERE username=?', (values[0],))
+        database_password = cursor.fetchall()
+        found_username = len(database_password) == 0
+        if found_username:
+            cursor.execute('INSERT INTO users VALUES (?, ?, ?)',values)
+            sqliteConnection.commit()
+            sqliteConnection.close()
+            return redirect(url_for('account_created_successfully'))
+        else:
+            return render_template('create_account.html',error='Username already exists')
         
-    return render_template('create_account.html')
+    return render_template('create_account.html', error='')
 
 
 @app.route('/account_created_successfully', methods=['GET', 'POST'])
