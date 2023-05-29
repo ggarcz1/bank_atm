@@ -19,7 +19,11 @@ def login():
         logText = str(datetime.datetime.now())+'\t'+username + '\t'+password+'\n'
         f.write(logText)
         f.close()
-
+        if len(username) == 0:
+            return render_template('login_page.html', error='Username Field cannot be blank')
+        elif len(password) == 0:
+            return render_template('login_page.html', error='Password Field cannot be blank')
+    
         found_username = False
         sqliteConnection = sqlite3.connect('users.db')
         cursor = sqliteConnection.cursor()
@@ -36,7 +40,7 @@ def login():
             session['user'] = username
             return redirect(url_for('logged_in', username=username))
         else:
-            return render_template('login_page.html')
+            return render_template('login_page.html', error='Incorrect Credentials.')
 
     return render_template('login_page.html')
 

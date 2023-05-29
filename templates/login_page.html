@@ -9,6 +9,10 @@
   <input type="text" id="password" name="password"><br><br>
   <input type="submit" value="Submit">
 </form> 
-
+<p></p>
+<p></p>
+{% if error %}
+  <b>ERROR: {{error}}</b>
+{% endif %}
 </body>
 </html>

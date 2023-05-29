@@ -11,7 +11,9 @@
   <input type="text" id="email" name="email"><br><br>
   <input type="submit" value="Submit">
   <p></p>
-  <b>ERROR: {{error}}</b>
+  {% if error %}
+    <b>ERROR: {{error}}</b>
+  {% endif %}
 </form> 
 
 </body>
