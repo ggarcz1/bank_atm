@@ -2,7 +2,7 @@ import requests
 from faker import Faker
 fake = Faker()
 
-url = 'http://127.0.0.1:5000/login_page?'
+url = 'http://127.0.0.1:5000/'
 data = {'username':'admin',
         'password':'admin'}
 
@@ -12,16 +12,16 @@ data_new_user = {'username': fake_arr[0],
                 'password': fake_arr[1],
                 'email': fake_arr[2]}
 # new user
-# response = requests.post(url=url, data=data_new_user, allow_redirects=True)
+response = requests.post(url=url+'create_account', data=data_new_user, allow_redirects=True)
 
 # login
-response = requests.post(url=url, data=data, allow_redirects=True)
+# response = requests.post(url=url+'login_page?', data=data, allow_redirects=True)
 
 if response.status_code == 200:
-    print('Successful login.')
+    print('Successful action.')
 elif response.status_code == 302:
-    print('Redirect login')
+    print('Redirect action')
 else:
-    print('Failed login')
+    print('Failed action')
 
 print(response.content)
