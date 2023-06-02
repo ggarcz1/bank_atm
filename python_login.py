@@ -15,5 +15,3 @@ else:
     print('Failed login')
 
 print(response.content)
-
-
