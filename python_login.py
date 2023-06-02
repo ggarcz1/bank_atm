@@ -6,7 +6,7 @@ data = {'username':'admin',
 
 fake_user = faker.name()
 fake_password = faker.password()
-fake_email = faker.emai()
+fake_email = faker.email()
 
 data_new_user = {'username':'',
                 'password':'',
