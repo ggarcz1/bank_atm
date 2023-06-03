@@ -3,9 +3,11 @@
 to run: 
 
 pip install -r requirements.txt
+
+
 python ./website.py
 
-vist 
+vist:
 http://127.0.0.1:5000
 
 python_login.py is a auto login/add new user based on requests library 
