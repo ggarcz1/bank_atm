@@ -2,6 +2,7 @@
  
 to run: 
 
+pip install -r requirements.txt
 python ./website.py
 
 vist 
