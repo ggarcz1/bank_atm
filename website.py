@@ -1,6 +1,7 @@
 from flask import Flask, session, render_template, redirect, request, url_for
 import datetime
 import sqlite3
+import crypt
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
