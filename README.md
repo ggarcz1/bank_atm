@@ -17,6 +17,7 @@ test_database.py tests the database contents
 ### Current To-Do Items ###
 1. Encrypt database usernames and passwords
 2. Add a database for bank account details
-3. Log IP Address that has logon to the website
+3. MFA or email to reset password
+4. Log IP Address that has logon to the website
 
 

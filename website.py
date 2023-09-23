@@ -1,6 +1,6 @@
 from flask import Flask, session, render_template, redirect, request, url_for
 import datetime
-import sqlite3
+import Complexity
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -31,7 +31,10 @@ def login():
         cursor.execute('SELECT password FROM users WHERE username=?', (username,))
         database_password = cursor.fetchall()
         sqliteConnection.close()
+        # check if username exists in the db
         found_username = len(database_password) != 0
+
+        ## testing the return value
         # print(database_password)
         # print(len(database_password) != 0)
         # print(len(database_password))
@@ -49,7 +52,7 @@ def logged_in(username):
     # get data on user from a database 
     balance = 0
     account_number = 1234567890
-    first_name =username+', Real_name'
+    first_name = username+', Real_name'
     return render_template('account_page.html', first_name=first_name, account_number=account_number, balance=balance)
 
 @app.route('/create_account', methods=['GET', 'POST'])
@@ -63,13 +66,21 @@ def create_account():
         elif len(values[2]) == 0:
             return render_template('create_account.html', error='Email Field cannot be blank')
         
+
+        # password complexity check
+        instance = Complexity
+        if instance.test_password_complexity(values[1]):
+            return render_template('create_account.html', error='Password does not meet complexity requirements.')
+
         sqliteConnection = sqlite3.connect('users.db')
         cursor = sqliteConnection.cursor()
         # check if user exists in the database already
         cursor.execute('SELECT password FROM users WHERE username=?', (values[0],))
         database_password = cursor.fetchall()
-        found_username = len(database_password) == 0
-        if found_username:
+        found_username = len(database_password) != 0
+
+        if not found_username:
+            # insert new user into db
             cursor.execute('INSERT INTO users VALUES (?, ?, ?)',values)
             sqliteConnection.commit()
             sqliteConnection.close()
