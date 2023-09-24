@@ -34,11 +34,11 @@ def special(val):
     return re.search('[!@#$%&*()]', val) is not None
 
 class Complexity(object):
-    def __init__(self):
-        self
+    def __init__(self, password):
+        self.password = password
 
-    def test_password_complexity(password):
-        return length(password) and spaces(password) and upperLower(password) and number(password) and consecutiveChars(password) and special(password)
+    def test_password_complexity(self):        
+        return length(self.password) and spaces(self.password) and upperLower(self.password) and number(self.password) and consecutiveChars(self.password) and special(self.password)
 
 
 
