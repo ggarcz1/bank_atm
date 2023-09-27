@@ -1,4 +1,5 @@
 from flask import Flask, session, render_template, redirect, request, url_for
+import sqlite3
 import datetime
 # from complexity.py import Complexity
 
@@ -67,10 +68,10 @@ def create_account():
             return render_template('create_account.html', error='Email Field cannot be blank')
         
 
-        # password complexity check
-        instance = Complexity(values[1])
-        if not instance.test_password_complexity():
-            return render_template('create_account.html', error='Password does not meet complexity requirements.')
+        ## password complexity check
+        # instance = Complexity(values[1])
+        # if not instance.test_password_complexity():
+        #     return render_template('create_account.html', error='Password does not meet complexity requirements.')
 
         sqliteConnection = sqlite3.connect('users.db')
         cursor = sqliteConnection.cursor()
