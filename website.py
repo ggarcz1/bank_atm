@@ -6,6 +6,42 @@ import datetime
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
+# bug fix #2
+# check if user exists
+# returns true if value exists
+def searchDB(database_name, username):
+    sqliteConnection = sqlite3.connect(database=database_name)
+    cursor = sqliteConnection.cursor()
+    # check if user exists in the database already
+    cursor.execute('SELECT password FROM users WHERE username=?', (username,))
+    database_password = cursor.fetchall()
+    return len(database_password) != 0
+
+def get_account_details(username):
+    if not searchDB('users.db',username=username):
+        return None
+
+    account_details = {'balance': 0.0,
+                       'email':'',
+                       'userID': '',
+                       'zipcode':0}
+    
+    sqliteConnection = sqlite3.connect('account_details.db')
+    cursor = sqliteConnection.cursor()
+    # check if user exists in the database already
+    cursor.execute('SELECT password FROM users WHERE username=?', (username,))
+    data = cursor.fetchall()
+    #double
+    account_details['balance'] = data[0][0]
+    #string
+    account_details['email'] = data[0][1]
+    #string of 10 digits and upper/lowercase characters
+    account_details['userID'] = data[0][2]
+    #number with 5 digits
+    account_details['zipcode'] = data[0][3]
+
+    return account_details
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     return render_template('home.html')
@@ -25,22 +61,23 @@ def login():
         elif len(password) == 0:
             return render_template('login_page.html', error='Password Field cannot be blank')
     
-        found_username = False
+        # found_username = False
         sqliteConnection = sqlite3.connect('users.db')
         cursor = sqliteConnection.cursor()
         # check if user exists and get password
         cursor.execute('SELECT password FROM users WHERE username=?', (username,))
         database_password = cursor.fetchall()
-        sqliteConnection.close()
-        # check if username exists in the db
-        found_username = len(database_password) != 0
+        # sqliteConnection.close()
+        # # check if username exists in the db
+        # found_username = len(database_password) != 0
 
         ## testing the return value
         # print(database_password)
         # print(len(database_password) != 0)
         # print(len(database_password))
         
-        if found_username and password == database_password[0][0]:
+        if searchDB('users.db', username) and password == database_password[0][0]:
+        # if found_username and password == database_password[0][0]:
             session['user'] = username
             return redirect(url_for('logged_in', username=username))
         else:
@@ -50,6 +87,11 @@ def login():
 
 @app.route('/user/<username>', methods=['GET', 'POST'])
 def logged_in(username):
+    # bug fix #2
+    # check if user exists
+    if not searchDB('users.db', username):
+        return render_template('login_page.html', error='Incorrect Credentials.')
+    
     # get data on user from a database 
     balance = 0
     account_number = 1234567890
@@ -80,6 +122,7 @@ def create_account():
         database_password = cursor.fetchall()
         found_username = len(database_password) != 0
 
+        #if not searchDB('users.db', username):
         if not found_username:
             # insert new user into db
             cursor.execute('INSERT INTO users VALUES (?, ?, ?)',values)
@@ -102,3 +145,4 @@ def logout():
     return 'Logged out' + '\n' + str(session['user'])
 if __name__=='__main__':
    app.run('127.0.0.1')
+
