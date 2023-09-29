@@ -14,31 +14,54 @@ def searchDB(database_name, username):
     cursor = sqliteConnection.cursor()
     # check if user exists in the database already
     cursor.execute('SELECT password FROM users WHERE username=?', (username,))
-    database_password = cursor.fetchall()
-    return len(database_password) != 0
+    database_results = cursor.fetchall()
+    return len(database_results) != 0
 
-def get_account_details(username):
-    if not searchDB('users.db',username=username):
-        return None
-
-    account_details = {'balance': 0.0,
-                       'email':'',
-                       'userID': '',
-                       'zipcode':0}
-    
-    sqliteConnection = sqlite3.connect('account_details.db')
+def getPassword(username):
+    #should always be 'users.db'
+    sqliteConnection = sqlite3.connect('users.db')
     cursor = sqliteConnection.cursor()
     # check if user exists in the database already
     cursor.execute('SELECT password FROM users WHERE username=?', (username,))
-    data = cursor.fetchall()
-    #double
-    account_details['balance'] = data[0][0]
-    #string
-    account_details['email'] = data[0][1]
-    #string of 10 digits and upper/lowercase characters
-    account_details['userID'] = data[0][2]
-    #number with 5 digits
-    account_details['zipcode'] = data[0][3]
+    database_password = cursor.fetchall()
+    return database_password[0][0]
+
+def get_account_details(username):
+    # if not searchDB('users.db',username=username):
+    #     return None
+
+    # account_details = {'first_name':'',
+    #                    'last_name':'',
+    #                    'balance': 0.0,
+    #                    'email':'',
+    #                    'account_number': '',
+    #                    'zipcode':0}
+    
+    # sqliteConnection = sqlite3.connect('account_details.db')
+    # cursor = sqliteConnection.cursor()
+    # cursor.execute('SELECT password FROM account_details WHERE username=?', (username,))
+    # data = cursor.fetchall()
+    # #string
+    # account_details['first_name'] = data[0][0]
+    # #string
+    # account_details['last_name'] = data[0][1]
+    # #double
+    # account_details['balance'] = data[0][2]
+    # #string
+    # account_details['email'] = data[0][3]
+    # #string of 10 digits and upper/lowercase characters
+    # account_details['account_number'] = data[0][4]
+    # #number with 5 digits
+    # account_details['zipcode'] = data[0][5]
+
+
+    # for testing 
+    account_details = {'first_name':'John',
+                       'last_name':'Doe',
+                       'balance': 23344.12,
+                       'email':'email@domain.com',
+                       'account_number': '12345678',
+                       'zipcode': 12345}
 
     return account_details
 
@@ -60,24 +83,8 @@ def login():
             return render_template('login_page.html', error='Username Field cannot be blank')
         elif len(password) == 0:
             return render_template('login_page.html', error='Password Field cannot be blank')
-    
-        # found_username = False
-        sqliteConnection = sqlite3.connect('users.db')
-        cursor = sqliteConnection.cursor()
-        # check if user exists and get password
-        cursor.execute('SELECT password FROM users WHERE username=?', (username,))
-        database_password = cursor.fetchall()
-        # sqliteConnection.close()
-        # # check if username exists in the db
-        # found_username = len(database_password) != 0
 
-        ## testing the return value
-        # print(database_password)
-        # print(len(database_password) != 0)
-        # print(len(database_password))
-        
-        if searchDB('users.db', username) and password == database_password[0][0]:
-        # if found_username and password == database_password[0][0]:
+        if searchDB('users.db', username) and password == getPassword(username):
             session['user'] = username
             return redirect(url_for('logged_in', username=username))
         else:
@@ -92,11 +99,15 @@ def logged_in(username):
     if not searchDB('users.db', username):
         return render_template('login_page.html', error='Incorrect Credentials.')
     
-    # get data on user from a database 
-    balance = 0
-    account_number = 1234567890
-    first_name = username+', Real_name'
-    return render_template('account_page.html', first_name=first_name, account_number=account_number, balance=balance)
+    # get data on user from a database
+    account_details = get_account_details(username)
+    return render_template('account_page.html', first_name=account_details['first_name'], 
+                           balance=account_details['balance'],
+                           account_number=account_details['account_number'],
+                           email=account_details['email'],
+                           zipcode=account_details['zipcode'] 
+                           )
+
 
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
