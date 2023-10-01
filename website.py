@@ -56,8 +56,9 @@ def get_account_details(username):
 
 
     # for testing 
-    account_details = {'first_name':'John',
-                       'last_name':'Doe',
+    #
+    account_details = {'first_name':'FirstName',
+                       'last_name':'LastName',
                        'balance': 23344.12,
                        'email':'email@domain.com',
                        'account_number': '12345678',
@@ -86,17 +87,21 @@ def login():
 
         if searchDB('users.db', username) and password == getPassword(username):
             session['user'] = username
-            return redirect(url_for('logged_in', username=username))
+            return redirect(url_for('logged_in'))
+            # return redirect(url_for('logged_in', username=username))
         else:
             return render_template('login_page.html', error='Incorrect Credentials.')
 
     return render_template('login_page.html')
 
-@app.route('/user/<username>', methods=['GET', 'POST'])
-def logged_in(username):
+# change this route to '/' then do a homepage at path '/home'?
+@app.route('/account', methods=['GET', 'POST'])
+def logged_in():
     # bug fix #2
     # check if user exists
+    username = session['user']
     if not searchDB('users.db', username):
+        session['logged_in'] = True
         return render_template('login_page.html', error='Incorrect Credentials.')
     
     # get data on user from a database
@@ -153,6 +158,7 @@ def account_created_successfully():
 @app.route('/logout')
 def logout():
     session['user'] = None
+    session['logged_in'] = False
     return 'Logged out' + '\n' + str(session['user'])
 if __name__=='__main__':
    app.run('127.0.0.1')
