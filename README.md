@@ -19,5 +19,6 @@ test_database.py tests the database contents
 2. Add a database for bank account details
 3. MFA or email to reset password
 4. Log IP Address that has logon to the website
+5. Lockout counter for brute force logon attempts
 
 
