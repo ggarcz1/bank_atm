@@ -35,6 +35,7 @@ def get_account_details(username):
     #                    'balance': 0.0,
     #                    'email':'',
     #                    'account_number': '',
+    #                    'pin':'',
     #                    'zipcode':0}
     
     # sqliteConnection = sqlite3.connect('account_details.db')
@@ -51,8 +52,10 @@ def get_account_details(username):
     # account_details['email'] = data[0][3]
     # #string of 10 digits and upper/lowercase characters
     # account_details['account_number'] = data[0][4]
+    # #number of 4 digits
+    # account_details['pin'] = data[0][5]
     # #number with 5 digits
-    # account_details['zipcode'] = data[0][5]
+    # account_details['zipcode'] = data[0][6]
 
 
     # for testing 
@@ -62,6 +65,7 @@ def get_account_details(username):
                        'balance': 23344.12,
                        'email':'email@domain.com',
                        'account_number': '12345678',
+                       'pin': 1234,
                        'zipcode': 12345}
 
     return account_details
@@ -150,6 +154,9 @@ def create_account():
         
     return render_template('create_account.html', error='')
 
+@app.route('/reset', methods=['GET', 'POST'])
+def reset_password():
+    return render_template('reset_password.html')
 
 @app.route('/account_created_successfully', methods=['GET', 'POST'])
 def account_created_successfully():
