@@ -40,7 +40,7 @@ def get_account_details(username):
     
     # sqliteConnection = sqlite3.connect('account_details.db')
     # cursor = sqliteConnection.cursor()
-    # cursor.execute('SELECT password FROM account_details WHERE username=?', (username,))
+    # cursor.execute('SELECT * FROM account_details WHERE username=?', (username,))
     # data = cursor.fetchall()
     # #string
     # account_details['first_name'] = data[0][0]
@@ -69,6 +69,23 @@ def get_account_details(username):
                        'zipcode': 12345}
 
     return account_details
+
+def reset_password_get_data(email, pin):
+    account_details = {'email':'',
+                       'pin': 0}
+    
+    # sqliteConnection = sqlite3.connect('account_details.db')
+    # cursor = sqliteConnection.cursor()
+    # cursor.execute('SELECT email,pin FROM account_details WHERE email=? AND pin=?', (email,pin))
+    # data = cursor.fetchall()
+    # account_details['email'] = data[0][0]
+    # account_details['pin'] = data[0][1]
+   
+    # for testing
+    account_details = {'email':'a@gmail.com',
+                       'pin':1234}
+
+    return account_details['email'] == email and account_details['pin'] == pin
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -156,6 +173,21 @@ def create_account():
 
 @app.route('/reset', methods=['GET', 'POST'])
 def reset_password():
+    if request.method == 'POST':
+        # check database if user exists
+        email = request.form['email']
+        pin = request.form['pin']
+
+        if reset_password_get_data(email, pin):
+            # send an email to the emial address for password reset link
+            # set timer for it to be 60 minutes
+            a = 1
+        else:
+            # do nothing
+            a = 1
+
+        return render_template('post_post_pwd_reset.html')
+
     return render_template('reset_password.html')
 
 @app.route('/account_created_successfully', methods=['GET', 'POST'])
