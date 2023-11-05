@@ -59,7 +59,6 @@ def get_account_details(username):
 
 
     # for testing 
-    #
     account_details = {'first_name':'FirstName',
                        'last_name':'LastName',
                        'balance': 23344.12,
@@ -80,11 +79,11 @@ def reset_password_get_data(email, pin):
     # data = cursor.fetchall()
     # account_details['email'] = data[0][0]
     # account_details['pin'] = data[0][1]
-   
+    # return account_details['email'] == email and account_details['pin'] == pin 
+
     # for testing
     account_details = {'email':'a@gmail.com',
                        'pin':1234}
-
     return account_details['email'] == email and account_details['pin'] == pin
 
 @app.route('/', methods=['GET', 'POST'])
@@ -194,11 +193,13 @@ def reset_password():
 def account_created_successfully():
     return render_template('account_created_successfully.html')
 
-@app.route('/logout')
+@app.route('/logout', methods=['GET', 'POST'])
 def logout():
+    logged_out_user = session['user']
     session['user'] = None
     session['logged_in'] = False
-    return 'Logged out' + '\n' + str(session['user'])
+    return render_template('logged_out.html', logged_out_user=logged_out_user)
+
 if __name__=='__main__':
    app.run('127.0.0.1')
 
