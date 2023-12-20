@@ -1,18 +1,17 @@
 # bank_atm
- 
-to run: 
+Welcome to the README for the Bank Website application, ATM, and the underlying directories
 
-pip install -r requirements.txt
+Steps to run: 
 
-
-python ./website.py
-
-vist:
-http://127.0.0.1:5000
+1. Download
+2. Move the folder to the appropriate directory
+3. Run "pip install -r requirements.txt"
+4. Run "python ./website.py"
+5. Vist: http://127.0.0.1:5000
 
 python_login.py is a auto login/add new user based on requests library 
 
-test_database.py tests the database contents
+databaseTest\test_database.py tests the database contents
 
 ### Current To-Do Items ###
 1. Encrypt database usernames and passwords
@@ -20,4 +19,4 @@ test_database.py tests the database contents
 3. MFA or email to reset password
 4. Log IP Address that has logon to the website
 5. Lockout counter for brute force logon attempts
-6. check for potential SQL injections via the logs
+6. check for potential SQL injections via the logs (SQLMap)

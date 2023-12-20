@@ -69,6 +69,9 @@ def get_account_details(username):
 
     return account_details
 
+def send_mfa(email):
+    return True
+
 def reset_password_get_data(email, pin):
     account_details = {'email':'',
                        'pin': 0}
