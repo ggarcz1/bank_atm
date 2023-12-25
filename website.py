@@ -57,7 +57,7 @@ def get_account_details(username):
     # #number with 5 digits
     # account_details['zipcode'] = data[0][6]
 
-
+    
     # for testing 
     account_details = {'first_name':'FirstName',
                        'last_name':'LastName',
