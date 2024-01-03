@@ -26,6 +26,24 @@ def getPassword(username):
     database_password = cursor.fetchall()
     return database_password[0][0]
 
+def log(email, pin, torf, type_of_log):
+    # log 
+    error = False
+    if type_of_log == 'logon':
+        file_name = 'logs.txt'
+    elif type_of_log == 'password_reset':
+        file_name = 'password_reset_logs.txt'
+    else:
+        file_name = None
+    
+    try:
+        f = open(file_name, 'a')
+        f.write(email+'\t'+pin+'\t'+torf)
+    except:
+        error = True
+
+    return error
+
 def get_account_details(username):
     # if not searchDB('users.db',username=username):
     #     return None
@@ -87,6 +105,8 @@ def reset_password_get_data(email, pin):
     # for testing
     account_details = {'email':'a@gmail.com',
                        'pin':1234}
+    email = account_details['email']
+    pin = account_details['pin']
     return account_details['email'] == email and account_details['pin'] == pin
 
 @app.route('/', methods=['GET', 'POST'])
@@ -103,6 +123,7 @@ def login():
         logText = str(datetime.datetime.now())+'\t'+username + '\t'+password+'\n'
         f.write(logText)
         f.close()
+        # log(logText, )
         if len(username) == 0:
             return render_template('login_page.html', error='Username Field cannot be blank')
         elif len(password) == 0:
@@ -180,18 +201,21 @@ def reset_password():
         email = request.form['email']
         pin = request.form['pin']
 
-        if reset_password_get_data(email, pin):
+        # if reset_password_get_data(email, pin):
+        if reset_password_get_data(email=email, pin=pin):
             # send an email to the emial address for password reset link
-            # set timer for it to be 60 minutes
+            # set timer for it to be 10 minutes
+            # log on server side
+            log(email, pin, True)
             a = 1
         else:
             # do nothing
             a = 1
+            # log error on server side
+            log(email, pin, False)
 
-        return render_template('post_post_pwd_reset.html')
-
-    return render_template('reset_password.html')
-
+    return redirect(url_for('post_post_pwd_reset'))
+    
 @app.route('/account_created_successfully', methods=['GET', 'POST'])
 def account_created_successfully():
     return render_template('account_created_successfully.html')
