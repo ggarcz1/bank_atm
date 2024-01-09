@@ -120,7 +120,9 @@ def login():
         password = request.form['password']
         # log to file
         f = open('logs.txt', 'a')
-        logText = str(datetime.datetime.now())+'\t'+request.host+'\t'+'\t'+username + '\t'+password+'\n'
+        ip_port = request.host.split(':')
+        host = ip_port[0] +'\t'+ip_port[1]
+        logText = str(datetime.datetime.now())+'\t'+host+'\t'+username + '\t'+password+'\n'
         f.write(logText)
         f.close()
         # log(logText, )
