@@ -120,7 +120,7 @@ def login():
         password = request.form['password']
         # log to file
         f = open('logs.txt', 'a')
-        logText = str(datetime.datetime.now())+'\t'+username + '\t'+password+'\n'
+        logText = str(datetime.datetime.now())+'\t'+request.host+'\t'+'\t'+username + '\t'+password+'\n'
         f.write(logText)
         f.close()
         # log(logText, )
@@ -150,6 +150,7 @@ def logged_in():
     
     # get data on user from a database
     account_details = get_account_details(username)
+    account_details['first_name'] = username
     return render_template('account_page.html', first_name=account_details['first_name'], 
                            balance=account_details['balance'],
                            account_number=account_details['account_number'],
@@ -228,5 +229,5 @@ def logout():
     return render_template('logged_out.html', logged_out_user=logged_out_user)
 
 if __name__=='__main__':
-   app.run(ssl_context=('cert.pem', 'key.pem'), host='127.0.0.1')
-#    app.run(host='127.0.0.1')
+#    app.run(ssl_context=('cert.pem', 'key.pem'), host='127.0.0.1')
+   app.run(host='127.0.0.1')
