@@ -44,46 +44,45 @@ def log(email, pin, torf, type_of_log):
 
     return error
 
-def get_account_details(username):
+def get_account_details(username):      
     # if not searchDB('users.db',username=username):
     #     return None
-
-    # account_details = {'first_name':'',
+    # else:
+    #     account_details = {'first_name':'',
     #                    'last_name':'',
     #                    'balance': 0.0,
     #                    'email':'',
     #                    'account_number': '',
     #                    'pin':'',
     #                    'zipcode':0}
-    
-    # sqliteConnection = sqlite3.connect('account_details.db')
-    # cursor = sqliteConnection.cursor()
-    # cursor.execute('SELECT * FROM account_details WHERE username=?', (username,))
-    # data = cursor.fetchall()
-    # #string
-    # account_details['first_name'] = data[0][0]
-    # #string
-    # account_details['last_name'] = data[0][1]
-    # #double
-    # account_details['balance'] = data[0][2]
-    # #string
-    # account_details['email'] = data[0][3]
-    # #string of 10 digits and upper/lowercase characters
-    # account_details['account_number'] = data[0][4]
-    # #number of 4 digits
-    # account_details['pin'] = data[0][5]
-    # #number with 5 digits
-    # account_details['zipcode'] = data[0][6]
+    #     sqliteConnection = sqlite3.connect('account_details.db')
+    #     cursor = sqliteConnection.cursor()
+    #     cursor.execute('SELECT * FROM account_details WHERE username=?', (username,))
+    #     data = cursor.fetchall()
+    #     #string
+    #     account_details['first_name'] = data[0][0]
+    #     #string
+    #     account_details['last_name'] = data[0][1]
+    #     #double
+    #     account_details['balance'] = data[0][2]
+    #     #string
+    #     account_details['email'] = data[0][3]
+    #     #string of 10 digits and upper/lowercase characters
+    #     account_details['account_number'] = data[0][4]
+    #     #number of 4 digits
+    #     account_details['pin'] = data[0][5]
+    #     #number with 5 digits
+    #     account_details['zipcode'] = data[0][6]
 
-    
-    # for testing 
+        
+        # for testing 
     account_details = {'first_name':'FirstName',
-                       'last_name':'LastName',
-                       'balance': 23344.12,
-                       'email':'email@domain.com',
-                       'account_number': '12345678',
-                       'pin': 1234,
-                       'zipcode': 12345}
+                        'last_name':'LastName',
+                        'balance': 23344.12,
+                        'email':'email@domain.com',
+                        'account_number': '12345678',
+                        'pin': 1234,
+                        'zipcode': 12345}
 
     return account_details
 
@@ -152,7 +151,6 @@ def logged_in():
     
     # get data on user from a database
     account_details = get_account_details(username)
-    account_details['first_name'] = username
     return render_template('account_page.html', first_name=account_details['first_name'], 
                            balance=account_details['balance'],
                            account_number=account_details['account_number'],
