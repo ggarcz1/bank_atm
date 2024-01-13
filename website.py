@@ -1,10 +1,15 @@
 from flask import Flask, session, render_template, redirect, request, url_for
 import sqlite3
 import datetime
-# from complexity.py import Complexity
+import random
+from complexity import Complexity
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+
+global ids
+ids = {}
 
 # bug fix #2
 # check if user exists
@@ -86,9 +91,13 @@ def get_account_details(username):
 
     return account_details
 
+# TODO:
 def send_mfa(email):
-    return True
+    # match email regex here
+    email = email
+    return False
 
+# TODO:
 def reset_password_get_data(email, pin):
     account_details = {'email':'',
                        'pin': 0}
@@ -145,6 +154,18 @@ def logged_in():
     # bug fix #2
     # check if user exists
     username = session['user']
+
+    # global ids
+    # generated_id = random.randint(1,999999)
+    # torf = True
+    # while torf:
+    #     if id[generated_id] is not None:
+    #         generated_id = random.randint(1,999999)
+    #     torf = False
+
+    # session['id'] = generated_id
+    # id[generated_id] = True
+
     if not searchDB('users.db', username):
         session['logged_in'] = True
         return render_template('login_page.html', error='Incorrect Credentials.')
@@ -170,8 +191,8 @@ def create_account():
         elif len(values[2]) == 0:
             return render_template('create_account.html', error='Email Field cannot be blank')
         
-
-        ## password complexity check
+        # TODO:
+        # # password complexity check
         # instance = Complexity(values[1])
         # if not instance.test_password_complexity():
         #     return render_template('create_account.html', error='Password does not meet complexity requirements.')
@@ -226,7 +247,12 @@ def logout():
     logged_out_user = session['user']
     session['user'] = None
     session['logged_in'] = False
-    return render_template('logged_out.html', logged_out_user=logged_out_user)
+    idz = session['id']
+    global id
+    id.pop(session['id'])
+    session['id'] = 'None'
+    
+    return render_template('logged_out.html', logged_out_user=idz)
 
 if __name__=='__main__':
 #    app.run(ssl_context=('cert.pem', 'key.pem'), host='127.0.0.1')
