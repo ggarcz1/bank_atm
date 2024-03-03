@@ -1,13 +1,18 @@
 from flask import Flask, session, render_template, redirect, request, url_for
 import sqlite3
 import datetime
+import os
 import random
 from complexity import Complexity
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_SENDER'] = os.environ.get('MAIL_SENDER')
+app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
 
+# mail = Mail(app)
 global ids
 ids = {}
 
@@ -230,6 +235,8 @@ def reset_password():
             # log on server side
             log(email, pin, True)
             a = 1
+            msg = Message("Password Reset", recipients=[email])
+            mail.send(msg)
         else:
             # do nothing
             a = 1
