@@ -6,13 +6,13 @@ Steps to run:
 
 1. Download
 2. Move the folder to the appropriate directory
-3. Run "pip install -r requirements.txt"
-4. Run "python ./website.py"
+3. Run `pip install -r requirements.txt`
+4. Run `python ./website.py`
 5. Vist: <http://127.0.0.1:5000>
 
-python_login.py is a auto login/add new user based on requests library
+`python_login.py` is a auto login/add new user based on requests library
 
-databaseTest\test_database.py tests the database contents
+`databaseTest\test_database.py` tests the database contents
 
 ### Current To-Do Items ###
 
