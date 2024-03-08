@@ -2,13 +2,13 @@ import hashlib
 import sqlite3
 
 
-def encyrpt(value):
+def encyrpt(value: str) -> hex:
     return hashlib.sha256(value.encode()).hexdigest()
 
-def addUser(username):
+def addUser(username: str) -> hex:
     return encyrpt(username)
 
-def addPassword(password):
+def addPassword(password: str) -> hex:
     return encyrpt(password)
 
 sqliteConnection = sqlite3.connect('users.db')

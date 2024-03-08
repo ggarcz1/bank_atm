@@ -6,24 +6,32 @@ import time
 # will revisit later
 PIN_LENGTH = 4
 
-def button_click(number):
+def button_click(number: int) -> None:
     current_pin = pin_var.get()
     pin_var.set(current_pin + str(number))
 
-def clear_pin():
+def clear_pin() -> None:
     pin_var.set("")
 
 # send to bank for procesing/comparison
 # make a new class for this, aka utilize the router here
-def verify_pin(hashed_pin):
-    #TODO:     
-    return bool
+def verify_pin(hashed_pin: str) -> dict:
+    #TODO:
+    if len(hashed_pin) != 4:
+        return {'error': True, 'Description': 0}
+    
+    pin_valid = True
+    if pin_valid:
+        return {'error': False, 'Description': 1}
+    
+    return {'error': True, 'Description': 2}
 
-def brute_force_test():
+
+def brute_force_test() -> bool:
     #TODO: 
     return bool
 
-def enter_pin():
+def enter_pin() -> bool:
     # for testing, delete for production
     entered_pin = pin_var.get()
     print(entered_pin)
@@ -38,9 +46,19 @@ def enter_pin():
     sha256_hash = hashlib.sha256()
     sha256_hash.update(entered_pin.encode('utf-8'))
     hashed_pin = sha256_hash.hexdigest()
+    
+    
     print(hashed_pin)
-    verify_pin(hashed_pin)
+    valid = verify_pin(hashed_pin) 
+    if valid['error']:
+        print (valid['Description'])
+        return False
+    else:
+        print('PIN is valid')
+        return True
 
+
+# f'PIN is incorrect length.  Expected 4 got {len(hashed_pin)}'
 # Create the main window
 root = tk.Tk()
 root.title("PIN Pad")

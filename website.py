@@ -3,6 +3,7 @@ import sqlite3
 import datetime
 import os
 import random
+import re
 from complexity import Complexity
 
 app = Flask(__name__)
@@ -19,7 +20,7 @@ ids = {}
 # bug fix #2
 # check if user exists
 # returns true if value exists
-def searchDB(database_name, username):
+def searchDB(database_name: str, username: str)  -> bool:
     sqliteConnection = sqlite3.connect(database=database_name)
     cursor = sqliteConnection.cursor()
     # check if user exists in the database already
@@ -27,7 +28,7 @@ def searchDB(database_name, username):
     database_results = cursor.fetchall()
     return len(database_results) != 0
 
-def getPassword(username):
+def getPassword(username: str) -> str:
     #should always be 'users.db'
     sqliteConnection = sqlite3.connect('users.db')
     cursor = sqliteConnection.cursor()
@@ -36,7 +37,7 @@ def getPassword(username):
     database_password = cursor.fetchall()
     return database_password[0][0]
 
-def log(email, pin, torf, type_of_log):
+def log(email: str, pin: int, torf: bool, type_of_log: str) -> str:
     # log 
     error = False
     if type_of_log == 'logon':
@@ -54,7 +55,7 @@ def log(email, pin, torf, type_of_log):
 
     return error
 
-def get_account_details(username):      
+def get_account_details(username: str) -> str:      
     # if not searchDB('users.db',username=username):
     #     return None
     # else:
@@ -97,13 +98,20 @@ def get_account_details(username):
     return account_details
 
 # TODO:
-def send_mfa(email):
-    # match email regex here
-    email = email
-    return False
+def send_mfa(email: str) -> str:
+    # via: https://chat.openai.com/c/8944d330-e1ec-490c-acf4-797ac2971e8a
+    # Regular expression pattern for matching email addresses
+    email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    torf = re.findall(email_regex, email)
+    if torf:
+        # do MFA Stuff
+        return True
+    else:
+        # return false, do not do MFA stuff
+        return False
 
 # TODO:
-def reset_password_get_data(email, pin):
+def reset_password_get_data(email: str, pin: int) -> bool:
     account_details = {'email':'',
                        'pin': 0}
     
