@@ -27,11 +27,11 @@ def account_data():
                        1234,
                        12345]
     
-    # cursor.execute("INSERT INTO users VALUES (?, ?, ?)",values)
+    # cursor.execute('INSERT INTO users VALUES (?, ?, ?)',values)
 
-    cursor.execute("INSERT INTO account_details VALUES (?, ?, ?, ?, ?, ?, ?)", account_details)
+    cursor.execute('INSERT INTO account_details VALUES (?, ?, ?, ?, ?, ?, ?)', account_details)
 
-    cursor.execute(f"SELECT * FROM account_details",)
+    cursor.execute(f'SELECT * FROM account_details',)
     print(cursor.fetchall())
 
     sqliteConnection.commit()
@@ -42,12 +42,12 @@ def users():
     cursor = sqliteConnection.cursor()
     ##search for a user
     # username = 'admin'
-    # cursor.execute("SELECT password FROM users WHERE username=?", (username,))
+    # cursor.execute('SELECT password FROM users WHERE username=?', (username,))
     # print(cursor.fetchall())
-    # cursor.execute("DELETE FROM users WHERE username=?",('John',))
+    # cursor.execute('DELETE FROM users WHERE username=?',('John',))
 
     #print out all users in the db
-    cursor.execute("SELECT * FROM users",)
+    cursor.execute('SELECT * FROM users',)
     lst = cursor.fetchall()
     print('Username, Password, Email')
     for idx in range(len(lst)):
@@ -62,7 +62,7 @@ def users():
     # print(cursor.fetchall())
     ## add a user
     # values = ['John','Doe','johnDoe@example.com']
-    # cursor.execute("INSERT INTO users VALUES (?, ?, ?)",values)
+    # cursor.execute('INSERT INTO users VALUES (?, ?, ?)',values)
 
     sqliteConnection.commit()
     sqliteConnection.close()

@@ -11,7 +11,7 @@ def button_click(number: int) -> None:
     pin_var.set(current_pin + str(number))
 
 def clear_pin() -> None:
-    pin_var.set("")
+    pin_var.set('')
 
 # send to bank for procesing/comparison
 # make a new class for this, aka utilize the router here
@@ -61,7 +61,7 @@ def enter_pin() -> bool:
 # f'PIN is incorrect length.  Expected 4 got {len(hashed_pin)}'
 # Create the main window
 root = tk.Tk()
-root.title("PIN Pad")
+root.title('PIN Pad')
 
 # Variable to store the PIN
 pin_var = tk.StringVar()
@@ -90,11 +90,11 @@ for button in buttons:
         row_val += 1
 
 # Button to clear the PIN
-tk.Button(root, text="Clear", padx=20, pady=20, command=clear_pin).grid(row=row_val, column=col_val)
+tk.Button(root, text='Clear', padx=20, pady=20, command=clear_pin).grid(row=row_val, column=col_val)
 
 # Button to enter the PIN
 # how to clear the pin after hitting enter?
-tk.Button(root, text="Enter", padx=20, pady=20, command=enter_pin).grid(row=row_val, column=col_val+1)
+tk.Button(root, text='Enter', padx=20, pady=20, command=enter_pin).grid(row=row_val, column=col_val+1)
 
 
 # on enter, run 

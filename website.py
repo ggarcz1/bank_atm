@@ -243,7 +243,7 @@ def reset_password():
             # log on server side
             log(email, pin, True)
             a = 1
-            msg = Message("Password Reset", recipients=[email])
+            msg = Message('Password Reset', recipients=[email])
             mail.send(msg)
         else:
             # do nothing
