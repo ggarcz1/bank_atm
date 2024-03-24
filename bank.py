@@ -5,11 +5,14 @@ import sqlite3
 def encyrpt(value: str) -> hex:
     return hashlib.sha256(value.encode()).hexdigest()
 
+
 def addUser(username: str) -> hex:
     return encyrpt(username)
 
+
 def addPassword(password: str) -> hex:
     return encyrpt(password)
+
 
 sqliteConnection = sqlite3.connect('users.db')
 cursor = sqliteConnection.cursor()

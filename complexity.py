@@ -1,6 +1,7 @@
 import hashlib
 import re
 
+
 class Complexity(object):
     def __init__(self, password):
         self.password = password
@@ -37,10 +38,7 @@ class Complexity(object):
     def hash_input_sha256(val):
         return hashlib.sha256(val.encode()).hexdigest()
 
-    def test_password_complexity(self):        
+    def test_password_complexity(self):
         return len(self.password) and self.spaces(self.password) \
-            and self.upperLower(self.password) and self.number(self.password)\
-            and self.consecutiveChars(self.password) and self.special(self.password)
-
-
-
+               and self.upperLower(self.password) and self.number(self.password) \
+               and self.consecutiveChars(self.password) and self.special(self.password)

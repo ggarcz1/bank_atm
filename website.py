@@ -17,10 +17,11 @@ app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
 global ids
 ids = {}
 
+
 # bug fix #2
 # check if user exists
 # returns true if value exists
-def searchDB(database_name: str, username: str)  -> bool:
+def searchDB(database_name: str, username: str) -> bool:
     sqliteConnection = sqlite3.connect(database=database_name)
     cursor = sqliteConnection.cursor()
     # check if user exists in the database already
@@ -28,14 +29,16 @@ def searchDB(database_name: str, username: str)  -> bool:
     database_results = cursor.fetchall()
     return len(database_results) != 0
 
+
 def getPassword(username: str) -> str:
-    #should always be 'users.db'
+    # should always be 'users.db'
     sqliteConnection = sqlite3.connect('users.db')
     cursor = sqliteConnection.cursor()
     # check if user exists in the database already
     cursor.execute('SELECT password FROM users WHERE username=?', (username,))
     database_password = cursor.fetchall()
     return database_password[0][0]
+
 
 def log(email: str, pin: int, torf: bool, type_of_log: str) -> str:
     # log 
@@ -46,16 +49,17 @@ def log(email: str, pin: int, torf: bool, type_of_log: str) -> str:
         file_name = 'password_reset_logs.txt'
     else:
         file_name = None
-    
+
     try:
         f = open(file_name, 'a')
-        f.write(email+'\t'+pin+'\t'+torf)
+        f.write(email + '\t' + pin + '\t' + torf)
     except:
         error = True
 
     return error
 
-def get_account_details(username: str) -> str:      
+
+def get_account_details(username: str) -> str:
     # if not searchDB('users.db',username=username):
     #     return None
     # else:
@@ -85,17 +89,17 @@ def get_account_details(username: str) -> str:
     #     #number with 5 digits
     #     account_details['zipcode'] = data[0][6]
 
-        
-        # for testing 
-    account_details = {'first_name':'FirstName',
-                        'last_name':'LastName',
-                        'balance': 23344.12,
-                        'email':'email@domain.com',
-                        'account_number': '12345678',
-                        'pin': 1234,
-                        'zipcode': 12345}
+    # for testing
+    account_details = {'first_name': 'FirstName',
+                       'last_name': 'LastName',
+                       'balance': 23344.12,
+                       'email': 'email@domain.com',
+                       'account_number': '12345678',
+                       'pin': 1234,
+                       'zipcode': 12345}
 
     return account_details
+
 
 # TODO:
 def send_mfa(email: str) -> str:
@@ -110,11 +114,12 @@ def send_mfa(email: str) -> str:
         # return false, do not do MFA stuff
         return False
 
+
 # TODO:
 def reset_password_get_data(email: str, pin: int) -> bool:
-    account_details = {'email':'',
+    account_details = {'email': '',
                        'pin': 0}
-    
+
     # sqliteConnection = sqlite3.connect('account_details.db')
     # cursor = sqliteConnection.cursor()
     # cursor.execute('SELECT email,pin FROM account_details WHERE email=? AND pin=?', (email,pin))
@@ -124,17 +129,19 @@ def reset_password_get_data(email: str, pin: int) -> bool:
     # return account_details['email'] == email and account_details['pin'] == pin 
 
     # for testing
-    account_details = {'email':'a@gmail.com',
-                       'pin':1234}
+    account_details = {'email': 'a@gmail.com',
+                       'pin': 1234}
     email = account_details['email']
     pin = account_details['pin']
     return account_details['email'] == email and account_details['pin'] == pin
+
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
     return render_template('home.html')
 
-@app.route('/login_page', methods=['GET','POST'])
+
+@app.route('/login_page', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
@@ -142,8 +149,8 @@ def login():
         # log to file
         f = open('logs.txt', 'a')
         ip_port = request.host.split(':')
-        host = ip_port[0] +'\t'+ip_port[1]
-        logText = str(datetime.datetime.now())+'\t'+host+'\t'+username + '\t'+password+'\n'
+        host = ip_port[0] + '\t' + ip_port[1]
+        logText = str(datetime.datetime.now()) + '\t' + host + '\t' + username + '\t' + password + '\n'
         f.write(logText)
         f.close()
         # log(logText, )
@@ -160,6 +167,7 @@ def login():
             return render_template('login_page.html', error='Incorrect Credentials.')
 
     return render_template('login_page.html')
+
 
 # change this route to '/' then do a homepage at path '/home'?
 @app.route('/account', methods=['GET', 'POST'])
@@ -182,14 +190,14 @@ def logged_in():
     if not searchDB('users.db', username):
         session['logged_in'] = True
         return render_template('login_page.html', error='Incorrect Credentials.')
-    
+
     # get data on user from a database
     account_details = get_account_details(username)
-    return render_template('account_page.html', first_name=account_details['first_name'], 
+    return render_template('account_page.html', first_name=account_details['first_name'],
                            balance=account_details['balance'],
                            account_number=account_details['account_number'],
                            email=account_details['email'],
-                           zipcode=account_details['zipcode'] 
+                           zipcode=account_details['zipcode']
                            )
 
 
@@ -203,7 +211,7 @@ def create_account():
             return render_template('create_account.html', error='Password Field cannot be blank')
         elif len(values[2]) == 0:
             return render_template('create_account.html', error='Email Field cannot be blank')
-        
+
         # TODO:
         # # password complexity check
         # instance = Complexity(values[1])
@@ -217,17 +225,18 @@ def create_account():
         database_password = cursor.fetchall()
         found_username = len(database_password) != 0
 
-        #if not searchDB('users.db', username):
+        # if not searchDB('users.db', username):
         if not found_username:
             # insert new user into db
-            cursor.execute('INSERT INTO users VALUES (?, ?, ?)',values)
+            cursor.execute('INSERT INTO users VALUES (?, ?, ?)', values)
             sqliteConnection.commit()
             sqliteConnection.close()
             return redirect(url_for('account_created_successfully'))
         else:
-            return render_template('create_account.html',error='Username already exists')
-        
+            return render_template('create_account.html', error='Username already exists')
+
     return render_template('create_account.html', error='')
+
 
 @app.route('/reset', methods=['GET', 'POST'])
 def reset_password():
@@ -238,7 +247,7 @@ def reset_password():
 
         # if reset_password_get_data(email, pin):
         if reset_password_get_data(email=email, pin=pin):
-            # send an email to the emial address for password reset link
+            # email the email address for password reset link
             # set timer for it to be 10 minutes
             # log on server side
             log(email, pin, True)
@@ -252,10 +261,12 @@ def reset_password():
             log(email, pin, False)
 
     return redirect(url_for('post_post_pwd_reset'))
-    
+
+
 @app.route('/account_created_successfully', methods=['GET', 'POST'])
 def account_created_successfully():
     return render_template('account_created_successfully.html')
+
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
@@ -266,9 +277,10 @@ def logout():
     global id
     id.pop(session['id'])
     session['id'] = 'None'
-    
+
     return render_template('logged_out.html', logged_out_user=idz)
 
-if __name__=='__main__':
-#    app.run(ssl_context=('cert.pem', 'key.pem'), host='127.0.0.1')
-   app.run(host='127.0.0.1')
+
+if __name__ == '__main__':
+    #    app.run(ssl_context=('cert.pem', 'key.pem'), host='127.0.0.1')
+    app.run(host='127.0.0.1')
