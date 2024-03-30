@@ -8,33 +8,47 @@ def account_data():
     sqliteConnection = sqlite3.connect('account_details.db')
     cursor = sqliteConnection.cursor()
 
-    # cursor.execute('''CREATE TABLE IF NOT EXISTS account_details (
-    #     first_name TEXT,
-    #     last_name TEXT, 
-    #     balance DOUBLE, 
-    #     email TEXT, 
-    #     account_number INTEGER, 
-    #     pin INTEGER, 
-    #     zipcode INTEGER
-    #     )
-    # ''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS account_details (
+        first_name TEXT,
+        last_name TEXT, 
+        balance DOUBLE, 
+        email TEXT, 
+        account_number INTEGER, 
+        pin INTEGER, 
+        zipcode INTEGER
+        )
+    ''')
 
-    account_details = ['testFirst', 
-                       'testLast',
-                       100.00,
-                       'test@test.com',
-                       123456789,
-                       1234,
-                       12345]
+# already added these 3
+    # account_details = ['tom', 
+    #                    'tom',
+    #                    43232.82,
+    #                    'tom@tom.com',
+    #                    839284661,
+    #                    8392,
+    #                    75234]
     
-    # cursor.execute('INSERT INTO users VALUES (?, ?, ?)',values)
+    # account_details2 = ['admin', 
+    #                    'admin',
+    #                    None,
+    #                    'admin@admin.com',
+    #                    None,
+    #                    None,
+    #                    None]
 
-    cursor.execute('INSERT INTO account_details VALUES (?, ?, ?, ?, ?, ?, ?)', account_details)
+    # account_details3 = ['JOE', 'doe',100.0, 'joe@joe.com', 123456789, 1234, 12345]
+    
+    # cursor.execute('INSERT INTO account_details VALUES (?, ?, ?, ?, ?, ?, ?)', account_details)
+    # cursor.execute('INSERT INTO account_details VALUES (?, ?, ?, ?, ?, ?, ?)', account_details2)
+    # cursor.execute('INSERT INTO account_details VALUES (?, ?, ?, ?, ?, ?, ?)', account_details3)
+    # sqliteConnection.commit()
 
-    cursor.execute(f'SELECT * FROM account_details',)
-    print(cursor.fetchall())
-
-    sqliteConnection.commit()
+    # print the database
+    cursor.execute('SELECT * FROM account_details',)
+    lst = cursor.fetchall()
+    print('first_name, last_name, balance, email, account_number, pin, zipcode')
+    for idx in range(len(lst)):
+        print(lst[idx])
     sqliteConnection.close()
 
 def users():
@@ -69,5 +83,5 @@ def users():
 
 
 
-# account_data()
-users()
+account_data()
+# users()

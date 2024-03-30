@@ -56,44 +56,48 @@ def log(email: str, pin: int, torf: bool, type_of_log: str) -> str:
     return error
 
 def get_account_details(username: str) -> str:      
-    # if not searchDB('users.db',username=username):
-    #     return None
-    # else:
-    #     account_details = {'first_name':'',
-    #                    'last_name':'',
-    #                    'balance': 0.0,
-    #                    'email':'',
-    #                    'account_number': '',
-    #                    'pin':'',
-    #                    'zipcode':0}
-    #     sqliteConnection = sqlite3.connect('account_details.db')
-    #     cursor = sqliteConnection.cursor()
-    #     cursor.execute('SELECT * FROM account_details WHERE username=?', (username,))
-    #     data = cursor.fetchall()
-    #     #string
-    #     account_details['first_name'] = data[0][0]
-    #     #string
-    #     account_details['last_name'] = data[0][1]
-    #     #double
-    #     account_details['balance'] = data[0][2]
-    #     #string
-    #     account_details['email'] = data[0][3]
-    #     #string of 10 digits and upper/lowercase characters
-    #     account_details['account_number'] = data[0][4]
-    #     #number of 4 digits
-    #     account_details['pin'] = data[0][5]
-    #     #number with 5 digits
-    #     account_details['zipcode'] = data[0][6]
+    if not searchDB('users.db', username=username):
+        return None
+    else:
+        if username == 'admin':
+            return 'admin'
+        else:
+            account_details = {'first_name':'',
+                        'last_name':'',
+                        'balance': 0.0,
+                        'email':'',
+                        'account_number': '',
+                        'pin':'',
+                        'zipcode':0}
+            
+            sqliteConnection = sqlite3.connect('account_details.db')
+            cursor = sqliteConnection.cursor()
+            cursor.execute('SELECT * FROM account_details WHERE first_name=?', (username,))
+            data = cursor.fetchall()
+            #string
+            account_details['first_name'] = data[0][0]
+            #string
+            account_details['last_name'] = data[0][1]
+            #double
+            account_details['balance'] = data[0][2]
+            #string
+            account_details['email'] = data[0][3]
+            #string of 10 digits and upper/lowercase characters
+            account_details['account_number'] = data[0][4]
+            #number of 4 digits
+            account_details['pin'] = data[0][5]
+            #number with 5 digits
+            account_details['zipcode'] = data[0][6]
 
         
         # for testing 
-    account_details = {'first_name':'FirstName',
-                        'last_name':'LastName',
-                        'balance': 23344.12,
-                        'email':'email@domain.com',
-                        'account_number': '12345678',
-                        'pin': 1234,
-                        'zipcode': 12345}
+    # account_details = {'first_name':'FirstName',
+    #                     'last_name':'LastName',
+    #                     'balance': 23344.12,
+    #                     'email':'email@domain.com',
+    #                     'account_number': '12345678',
+    #                     'pin': 1234,
+    #                     'zipcode': 12345}
 
     return account_details
 
@@ -185,7 +189,10 @@ def logged_in():
     
     # get data on user from a database
     account_details = get_account_details(username)
-    return render_template('account_page.html', first_name=account_details['first_name'], 
+    if account_details == 'admin':
+        return render_template('admin_pannel.html')
+    else:
+        return render_template('account_page.html', first_name=account_details['first_name'], 
                            balance=account_details['balance'],
                            account_number=account_details['account_number'],
                            email=account_details['email'],
@@ -205,9 +212,8 @@ def create_account():
             return render_template('create_account.html', error='Email Field cannot be blank')
         
         # TODO:
-        # # password complexity check
-        # instance = Complexity(values[1])
-        # if not instance.test_password_complexity():
+        # password complexity check
+        # if not Complexity.test_password_complexity(values[1]):
         #     return render_template('create_account.html', error='Password does not meet complexity requirements.')
 
         sqliteConnection = sqlite3.connect('users.db')

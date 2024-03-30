@@ -37,10 +37,14 @@ class Complexity(object):
     def hash_input_sha256(val):
         return hashlib.sha256(val.encode()).hexdigest()
 
+    # def test_password_complexity(self):        
+    #     return self.length(self.password) and self.spaces(self.password) \
+    #         and self.upperLower(self.password) and self.number(self.password)\
+    #         and self.consecutiveChars(self.password) and self.special(self.password)
+    
     def test_password_complexity(self):        
-        return len(self.password) and self.spaces(self.password) \
+        return self.length(self.password) and self.spaces(self.password) \
             and self.upperLower(self.password) and self.number(self.password)\
             and self.consecutiveChars(self.password) and self.special(self.password)
-
 
 
