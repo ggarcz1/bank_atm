@@ -1,6 +1,7 @@
 import hashlib
 import re
 
+
 class Complexity(object):
     def __init__(self, password):
         self.password = password
