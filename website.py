@@ -21,12 +21,15 @@ ids = {}
 # bug fix #2
 # check if user exists
 # returns true if value exists
+# TODO: remove the paramater 'database_name' as this function 
+# always connects to users.db
 def searchDB(database_name: str, username: str) -> bool:
-    sqliteConnection = sqlite3.connect(database=database_name)
+    sqliteConnection = sqlite3.connect(database='users.db')
     cursor = sqliteConnection.cursor()
-    # check if user exists in the database already
+    # check if user exists in the database
     cursor.execute('SELECT password FROM users WHERE username=?', (username,))
     database_results = cursor.fetchall()
+    # returns true if value exists
     return len(database_results) != 0
 
 
@@ -34,10 +37,14 @@ def getPassword(username: str) -> str:
     # should always be 'users.db'
     sqliteConnection = sqlite3.connect('users.db')
     cursor = sqliteConnection.cursor()
-    # check if user exists in the database already
+    # check if user exists in the database already    
     cursor.execute('SELECT password FROM users WHERE username=?', (username,))
     database_password = cursor.fetchall()
     return database_password[0][0]
+
+    # if searchDB(database_name='users.db', username=username):
+    #     database_password = cursor.fetchall()
+    #     return database_password[0][0]    
 
 
 def log(email: str, pin: int, torf: bool, type_of_log: str) -> str:
@@ -288,5 +295,6 @@ def logout():
 
 
 if __name__ == '__main__':
+    ## HTTPS item
     #    app.run(ssl_context=('cert.pem', 'key.pem'), host='127.0.0.1')
     app.run(host='127.0.0.1')
