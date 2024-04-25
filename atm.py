@@ -1,12 +1,15 @@
 import tkinter as tk
 import hashlib
 import time
+import random
+from router import Router
 
 # due to time constraints and my thirst to conquer connecting the apps,
 # most of this is from ChatGPT.  
 # will revisit later
 PIN_LENGTH = 4
-
+ROUTER = 'BankRouter1'
+IP = '192.1.1.0'
 
 def button_click(number: int) -> None:
     current_pin = pin_var.get()
@@ -35,32 +38,47 @@ def brute_force_test() -> bool:
     # TODO:
     return bool
 
+def get_random_nonce() -> int:
+    # send this value to a database to compare with later on
+    return ((random.randint(1, 1103515245) * random.randint(1, 12345) + random.randint(1, 100)) % ((2**31) - 1))
+
 
 def enter_pin() -> bool:
-    # for testing, delete for production
     entered_pin = pin_var.get()
+
+    # for testing, delete for production
     print(entered_pin)
 
     global PIN_LENGTH
-    if len(entered_pin) is not PIN_LENGTH:
-        # create error here
-        a = 5
+    length_entered_pin = len(entered_pin)
+    if length_entered_pin is PIN_LENGTH:
+        # hash here
+        # TODO: change this/add salt/time based bc all 0000-9999 sha256 hashes are known
 
-    # hash here
-    # TODO: change this/add salt/time based bc all 0000-9999 sha256 hashes are known
-    sha256_hash = hashlib.sha256()
-    sha256_hash.update(entered_pin.encode('utf-8'))
-    hashed_pin = sha256_hash.hexdigest()
+        sha256_hash = hashlib.sha256()
+        nonce = str(get_random_nonce())
+        # hash nonce
+        sha256_hash.update(nonce.encode('utf-8'))
+        
+        # for testing
+        # print(entered_pin)
+        # hash pin
+        sha256_hash.update(entered_pin.encode('utf-8'))
+        hashed_pin = sha256_hash.hexdigest()
+        # TODO: how to combine pin with nonce?
+        
+        # hashed_value = sha256_hash.update((nonce+''+hashed_pin).encode('utf-8'))
+        global ROUTER
+        global IP
+        r = Router(hostname=ROUTER, ip=IP)
+        status = r.send(pin=hashed_pin, nonce=nonce)
+        # for testing
+        print(f'{status}\n{hashed_pin}')
 
-    print(hashed_pin)
-    valid = verify_pin(hashed_pin)
-    if valid['error']:
-        print(valid['Description'])
+        return status
+    else: 
+        print(f'Error. PIN length of {length_entered_pin} expected {PIN_LENGTH}')
         return False
-    else:
-        print('PIN is valid')
-        return True
-
 
 # f'PIN is incorrect length.  Expected 4 got {len(hashed_pin)}'
 # Create the main window
@@ -87,8 +105,12 @@ row_val = 1
 col_val = 0
 
 for button in buttons:
-    tk.Button(root, text=button, padx=20, pady=20, command=lambda digit=button: button_click(digit)).grid(row=row_val,
-                                                                                                          column=col_val)
+    tk.Button(root, 
+              text=button, 
+              padx=20, 
+              pady=20, 
+              command=lambda digit=button: button_click(digit)).grid(row=row_val,
+                                                                     column=col_val)
     col_val += 1
     if col_val > 2:
         col_val = 0
