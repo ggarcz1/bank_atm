@@ -11,6 +11,7 @@ PIN_LENGTH = 4
 ROUTER = 'BankRouter1'
 IP = '192.1.1.0'
 
+
 def button_click(number: int) -> None:
     current_pin = pin_var.get()
     pin_var.set(current_pin + str(number))
@@ -38,9 +39,10 @@ def brute_force_test() -> bool:
     # TODO:
     return bool
 
+
 def get_random_nonce() -> int:
     # send this value to a database to compare with later on
-    return ((random.randint(1, 1103515245) * random.randint(1, 12345) + random.randint(1, 100)) % ((2**31) - 1))
+    return (random.randint(1, 1103515245) * random.randint(1, 12345) + random.randint(1, 100)) % ((2 ** 31) - 1)
 
 
 def enter_pin() -> bool:
@@ -59,14 +61,14 @@ def enter_pin() -> bool:
         nonce = str(get_random_nonce())
         # hash nonce
         sha256_hash.update(nonce.encode('utf-8'))
-        
+
         # for testing
         # print(entered_pin)
         # hash pin
         sha256_hash.update(entered_pin.encode('utf-8'))
         hashed_pin = sha256_hash.hexdigest()
         # TODO: how to combine pin with nonce?
-        
+
         # hashed_value = sha256_hash.update((nonce+''+hashed_pin).encode('utf-8'))
         global ROUTER
         global IP
@@ -76,9 +78,10 @@ def enter_pin() -> bool:
         print(f'{status}\n{hashed_pin}')
 
         return status
-    else: 
+    else:
         print(f'Error. PIN length of {length_entered_pin} expected {PIN_LENGTH}')
         return False
+
 
 # f'PIN is incorrect length.  Expected 4 got {len(hashed_pin)}'
 # Create the main window
@@ -105,10 +108,10 @@ row_val = 1
 col_val = 0
 
 for button in buttons:
-    tk.Button(root, 
-              text=button, 
-              padx=20, 
-              pady=20, 
+    tk.Button(root,
+              text=button,
+              padx=20,
+              pady=20,
               command=lambda digit=button: button_click(digit)).grid(row=row_val,
                                                                      column=col_val)
     col_val += 1
