@@ -10,9 +10,33 @@ class Router:
     def values(self) -> list:
         return [self.hostname, self.ip]
 
-    def send(self, pin, nonce) -> bool:
-        # input check nonce here
-        if pin is None or type(pin) is not str:
-            return False
-        # send pin to the db for confirmation
+    def send(self, dest_ip, src_ip, data) -> bool:
+        # input check ips here
+        
         return True
+        
+    def testConnection(self, dest_ip, src_ip) -> bool:
+        # input check ips here
+        
+        return True
+        
+    # admin items
+    # verify admin user 
+    def verifyAdmin(username, password, pin) -> bool:
+        return True
+        
+    # set router ip
+    def setRouter(self, dest_ip, src_ip, data) -> bool:
+        verified = verifyAdmin(username, password, pin)
+        
+        # input check ips here
+        return True
+    
+    # update router 
+    def updateRouter(self, dest_ip, src_ip, data) -> bool:
+        verified = verifyAdmin(username, password, pin)
+        
+        # input check ips here
+        return True
+    
+    
