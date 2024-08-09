@@ -46,22 +46,44 @@ def getPassword(username: str) -> str:
     #     database_password = cursor.fetchall()
     #     return database_password[0][0]    
 
+# TODO:
+def log(data: dict) -> list:
+    error = [False, 'Successfully Logged']
+    # check for logtype field
+    # TODO: make field length counts here as well
+    if data['type_of_log'] is None:
+        error = ['True', 'Malformed log data.']
+        return error
+    path = 'Logs\\'
+    # logon --> 7 --> logtype, datetime, host, port, username, password, status
+    # password reset --> ? --> logtype, datetime, host, username, field_updated, status
+    # update data on profile -->  ? --> logtype, datetime, host, username, field_updated, status
+    # register account -->  ? --> logtype, datetime, host, username, field_updated, status
 
-def log(email: str, pin: int, torf: bool, type_of_log: str) -> str:
-    # log 
-    error = False
+    # if len(data) != 
+    type_of_log = data['type_of_log']
+
     if type_of_log == 'logon':
-        file_name = 'logs.txt'
+        file_name = path+'logs.txt'
+        date_time = data['date_time']
+        host = data['host']
+        port = data['port']
+        username = data['username']
+        password = data['password']
+        status = data['status']
+        logText = f'{data[0]}\t{data[1]}\t{username}\t{password}\t{status}\n'
+
     elif type_of_log == 'password_reset':
         file_name = 'password_reset_logs.txt'
+        # email: str, pin: int, torf: bool, 
     else:
         file_name = None
 
     try:
         f = open(file_name, 'a')
-        f.write(email + '\t' + pin + '\t' + torf)
+        # f.write(email + '\t' + pin + '\t' + torf)
     except:
-        error = True
+        error = [True, f'{Exception}']
 
     return error
 
@@ -146,24 +168,36 @@ def reset_password_get_data(email: str, pin: int) -> bool:
     pin = account_details['pin']
     return account_details['email'] == email and account_details['pin'] == pin
 
+# TODO:
+# alert on possible brute force
+def failure_count():
+    # time
+    global logon_failures
+    logon_failures += 1
+    if logon_failures > 10:
+        print()
+    return None
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
     return render_template('home.html')
 
+@app.route('/review_logs', methods=['GET'])
+def review_logs():
+    return render_template('logs.html')
 
 @app.route('/login_page', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        # log to file
-        f = open('logs.txt', 'a')
+        # set host, port, etc for logs file
+        f = open('Logs\\logs.txt', 'a')
         ip_port = request.host.split(':')
         host = ip_port[0] + '\t' + ip_port[1]
-        logText = str(datetime.datetime.now()) + '\t' + host + '\t' + username + '\t' + password + '\n'
-        f.write(logText)
-        f.close()
+
+        # TODO: utilize log method here?
+        # depends on how much i will be logging
         # log(logText, )
         if len(username) == 0:
             return render_template('login_page.html', error='Username Field cannot be blank')
@@ -172,9 +206,19 @@ def login():
 
         if searchDB('users.db', username) and password == getPassword(username):
             session['user'] = username
+            # true logon
+            status = 'SUCCESS'
+            logText = f'{str(datetime.datetime.now())}\t{host}\t{username}\t{password}\t{status}\n'
+            f.write(logText)
+            f.close()
             return redirect(url_for('logged_in'))
             # return redirect(url_for('logged_in', username=username))
         else:
+            status = 'FAILURE'
+            # failure_count += 1
+            logText = f'{str(datetime.datetime.now())}\t{host}\t{username}\t{password}\t{status}\n'
+            f.write(logText)
+            f.close()
             return render_template('login_page.html', error='Incorrect Credentials.')
 
     return render_template('login_page.html')
@@ -297,4 +341,6 @@ def logout():
 if __name__ == '__main__':
     ## HTTPS item
     #    app.run(ssl_context=('cert.pem', 'key.pem'), host='127.0.0.1')
-    app.run(host='127.0.0.1')
+    host = '127.0.22.1'
+    port = '9999'
+    app.run(host=f'{host}', port=f'{port}')
