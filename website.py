@@ -17,7 +17,6 @@ app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
 global ids
 ids = {}
 
-
 # bug fix #2
 # check if user exists
 # returns true if value exists
@@ -52,36 +51,61 @@ def log(data: dict) -> list:
     # check for logtype field
     # TODO: make field length counts here as well
     if data['type_of_log'] is None:
-        error = ['True', 'Malformed log data.']
-        return error
+        return ['True', 'Malformed log data.']
+    
     path = 'Logs\\'
-    # logon --> 7 --> logtype, datetime, host, port, username, password, status
-    # password reset --> ? --> logtype, datetime, host, username, field_updated, status
-    # update data on profile -->  ? --> logtype, datetime, host, username, field_updated, status
-    # register account -->  ? --> logtype, datetime, host, username, field_updated, status
-
-    # if len(data) != 
+    logText = {}
+    data_length = len(data)
     type_of_log = data['type_of_log']
 
-    if type_of_log == 'logon':
-        file_name = path+'logs.txt'
-        date_time = data['date_time']
-        host = data['host']
-        port = data['port']
-        username = data['username']
-        password = data['password']
-        status = data['status']
-        logText = f'{data[0]}\t{data[1]}\t{username}\t{password}\t{status}\n'
+    # delete after/add to documentation
+    # logon --> 7 --> logtype, datetime, host, port, username, password, status
+    # logout --> ? --> logtype, datetime, host, port, username, status, placeholder
+    # password reset --> ? --> logtype, datetime, host, port, username, field_updated, status
+    # update data on profile -->  ? --> logtype, datetime, host, port, username, field_updated, status
+    # register account -->  ? --> logtype, datetime, host, port, username, field_updated, status
 
+    # logtype, datetime, host, port, action, username, password, info, status
+    # action --> ['logon', 'logout', 'password_reset', ]
+
+    # TODO: add lengths for additional check
+    if type_of_log == 'logon' and data_length == 7:
+        file_name = path+'logs.txt'
+        logText = f'{data["type_of_log"]}\t{data["date_time"]}\t{data["host"]}\t{data["port"]}\t{data["username"]}\t{data["password"]}\t{data["status"]}\n'
+
+    # TODO:
+    elif type_of_log == 'logout':
+        file_name = path+'logout.txt'
+        logText = f'{data["type_of_log"]}\t{data["date_time"]}\t{data["host"]}\t{data["port"]}\t{data["username"]}\t{data["password"]}\t{data["status"]}\n'
+    
+    # TODO:
     elif type_of_log == 'password_reset':
-        file_name = 'password_reset_logs.txt'
-        # email: str, pin: int, torf: bool, 
+        file_name = path+'password_reset_logs.txt'
+        logText = f'{data["type_of_log"]}\t{data["date_time"]}\t{data["host"]}\t{data["port"]}\t{data["username"]}\t{data["password"]}\t{data["status"]}\n'
+
+    # TODO:
+    elif type_of_log == 'update_account':
+        file_name = path+'update_account_logs.txt'
+        logText = f'{data["type_of_log"]}\t{data["date_time"]}\t{data["host"]}\t{data["port"]}\t{data["username"]}\t{data["password"]}\t{data["status"]}\n'
+    
+    # TODO:
+    elif type_of_log == 'register_account':
+        file_name = path+'register_account_logs.txt'
+        logText = f'{data["type_of_log"]}\t{data["date_time"]}\t{data["host"]}\t{data["port"]}\t{data["username"]}\t{data["password"]}\t{data["status"]}\n'
+
     else:
         file_name = None
 
     try:
-        f = open(file_name, 'a')
-        # f.write(email + '\t' + pin + '\t' + torf)
+        f1 = open(file_name, 'a')
+        f2 = open('Logs\\master_logs.txt', 'a')
+        f1.write(logText)
+        # TODO: logs will need to be the same length
+        # not necessarily 
+        f2.write(logText)
+        f1.close()
+        f2.close()
+
     except:
         error = [True, f'{Exception}']
 
@@ -191,14 +215,12 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        # set host, port, etc for logs file
-        f = open('Logs\\logs.txt', 'a')
-        ip_port = request.host.split(':')
-        host = ip_port[0] + '\t' + ip_port[1]
 
-        # TODO: utilize log method here?
-        # depends on how much i will be logging
-        # log(logText, )
+        # f = open('Logs\\logs.txt', 'a')
+        ip_port = request.host.split(':')
+        host = ip_port[0]
+        port = ip_port[1]
+
         if len(username) == 0:
             return render_template('login_page.html', error='Username Field cannot be blank')
         elif len(password) == 0:
@@ -208,17 +230,27 @@ def login():
             session['user'] = username
             # true logon
             status = 'SUCCESS'
-            logText = f'{str(datetime.datetime.now())}\t{host}\t{username}\t{password}\t{status}\n'
-            f.write(logText)
-            f.close()
+            # logon --> 7 --> logtype, datetime, host, port, username, password, status
+            log(data= {'type_of_log': 'logon',
+                    'date_time': str(datetime.datetime.now()), 
+                    'host': host,
+                    'port': port, 
+                    'username': username, 
+                    'password': password,
+                    'status': status})
+
             return redirect(url_for('logged_in'))
-            # return redirect(url_for('logged_in', username=username))
         else:
             status = 'FAILURE'
+            # TODO: failure count
             # failure_count += 1
-            logText = f'{str(datetime.datetime.now())}\t{host}\t{username}\t{password}\t{status}\n'
-            f.write(logText)
-            f.close()
+            log(data= {'type_of_log': 'logon',
+                    'date_time': str(datetime.datetime.now()), 
+                    'host': host,
+                    'port': port, 
+                    'username': username, 
+                    'password': password,
+                    'status': status})
             return render_template('login_page.html', error='Incorrect Credentials.')
 
     return render_template('login_page.html')
