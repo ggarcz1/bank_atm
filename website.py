@@ -71,38 +71,71 @@ def log(data: dict) -> list:
     # TODO: add lengths for additional check
     if type_of_log == 'logon' and data_length == 7:
         file_name = path+'logs.txt'
-        logText = f'{data["type_of_log"]}\t{data["date_time"]}\t{data["host"]}\t{data["port"]}\t{data["username"]}\t{data["password"]}\t{data["status"]}\n'
+        logText = f'{data["type_of_log"]}\t' \
+                    f'{data["date_time"]}\t' \
+                        f'{data["host"]}\t' \
+                            f'{data["port"]}\t' \
+                                f'{data["username"]}\t' \
+                                    f'{data["password"]}\t' \
+                                        f'{data["status"]}\n'
 
     # TODO:
     elif type_of_log == 'logout':
         file_name = path+'logout.txt'
-        logText = f'{data["type_of_log"]}\t{data["date_time"]}\t{data["host"]}\t{data["port"]}\t{data["username"]}\t{data["password"]}\t{data["status"]}\n'
+        logText = f'{data["type_of_log"]}\t' \
+                        f'{data["date_time"]}\t' \
+                            f'{data["host"]}\t' \
+                                f'{data["port"]}\t' \
+                                    f'{data["username"]}\t' \
+                                        f'{data["status"]}\n'
     
     # TODO:
     elif type_of_log == 'password_reset':
         file_name = path+'password_reset_logs.txt'
-        logText = f'{data["type_of_log"]}\t{data["date_time"]}\t{data["host"]}\t{data["port"]}\t{data["username"]}\t{data["password"]}\t{data["status"]}\n'
+        logText = f'{data["type_of_log"]}\t' \
+                        f'{data["date_time"]}\t' \
+                            f'{data["host"]}\t' \
+                                f'{data["port"]}\t' \
+                                    f'{data["username"]}\t' \
+                                        f'{data["password_old"]}\t' \
+                                            f'{data["password_new"]}\t' \
+                                                f'{data["status"]}\n'
+
 
     # TODO:
     elif type_of_log == 'update_account':
         file_name = path+'update_account_logs.txt'
-        logText = f'{data["type_of_log"]}\t{data["date_time"]}\t{data["host"]}\t{data["port"]}\t{data["username"]}\t{data["password"]}\t{data["status"]}\n'
+        logText = f'{data["type_of_log"]}\t' \
+                        f'{data["date_time"]}\t' \
+                            f'{data["host"]}\t' \
+                                f'{data["port"]}\t' \
+                                    f'{data["username"]}\t' \
+                                        f'{data["updated_field"]}\t' \
+                                            f'{data["updated_data"]}\t' \
+                                                f'{data["status"]}\n'
     
     # TODO:
     elif type_of_log == 'register_account':
         file_name = path+'register_account_logs.txt'
-        logText = f'{data["type_of_log"]}\t{data["date_time"]}\t{data["host"]}\t{data["port"]}\t{data["username"]}\t{data["password"]}\t{data["status"]}\n'
+        logText = f'{data["type_of_log"]}\t' \
+                        f'{data["date_time"]}\t' \
+                            f'{data["host"]}\t' \
+                                f'{data["port"]}\t' \
+                                    f'{data["username"]}\t' \
+                                        f'{data["status"]}\n'
 
     else:
         file_name = None
 
     try:
         f1 = open(file_name, 'a')
+        # Note, master logs are not the same length for each type
+        # will have to make a tool to parse them
         f2 = open('Logs\\master_logs.txt', 'a')
+        
         f1.write(logText)
-        # TODO: logs will need to be the same length
-        # not necessarily 
         f2.write(logText)
+
         f1.close()
         f2.close()
 
@@ -208,6 +241,9 @@ def home():
 
 @app.route('/review_logs', methods=['GET'])
 def review_logs():
+    # check auth
+    # MFA?
+    f = open('Logs\\logs.txt')
     return render_template('logs.html')
 
 @app.route('/login_page', methods=['GET', 'POST'])
@@ -261,7 +297,10 @@ def login():
 def logged_in():
     # bug fix #2
     # check if user exists
-    username = session['user']
+    try:
+        username = session['user']
+    except:
+        return render_template('login_page.html', error='Incorrect Credentials.')
 
     # global ids
     # generated_id = random.randint(1,999999)
@@ -275,13 +314,16 @@ def logged_in():
     # id[generated_id] = True
 
     if not searchDB('users.db', username):
-        session['logged_in'] = True
+        session['logged_in'] = False
         return render_template('login_page.html', error='Incorrect Credentials.')
 
     # get data on user from a database
     account_details = get_account_details(username)
     if account_details == 'admin':
+        # session['logged_in'] = True
+        # session['username'] = 'admin'
         return render_template('admin_pannel.html')
+    
     else:
         return render_template('account_page.html', first_name=account_details['first_name'],
                            balance=account_details['balance'],
