@@ -28,3 +28,10 @@ logon	2024-08-12 20:33:51.160837	127.0.22.1	9999	admin	admin	SUCCESS
 logon	2024-08-12 20:39:32.872895	127.0.22.1	9999	admin	admin	SUCCESS
 logon	2024-08-12 20:45:49.218198	127.0.22.1	9999	admin	admin	SUCCESS
 logon	2024-08-12 21:29:07.208340	127.0.22.1	9999	admin	admin	SUCCESS
+register_account	2024-08-21 20:38:34.027560	127.0.22.1	9999	joeShmoe12	Success
+register_account	2024-08-21 20:39:02.426934	127.0.22.1	9999	joeShmoe12	Username already exists
+register_account	2024-08-21 20:39:16.205437	127.0.22.1	9999	None	Username Field cannot be blank
+register_account	2024-08-21 20:39:27.880659	127.0.22.1	9999	None	Password Field cannot be blank
+register_account	2024-08-21 20:39:32.804219	127.0.22.1	9999	asd	Success
+register_account	2024-08-21 20:39:47.416201	127.0.22.1	9999	None	Email Field cannot be blank
+register_account	2024-08-21 20:47:15.424313	127.0.22.1	9999	None	Passwords do not match

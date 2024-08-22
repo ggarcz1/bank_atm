@@ -336,14 +336,50 @@ def logged_in():
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
     if request.method == 'POST':
-        values = [request.form['username'], request.form['password'], request.form['email']]
-        if len(values[0]) == 0:
-            return render_template('create_account.html', error='Username Field cannot be blank')
-        elif len(values[1]) == 0:
-            return render_template('create_account.html', error='Password Field cannot be blank')
-        elif len(values[2]) == 0:
-            return render_template('create_account.html', error='Email Field cannot be blank')
+        error = username = None
+        status = True
+        values = [request.form['username'],
+                  request.form['password'],
+                  request.form['re_enter_password'],
+                  request.form['email']
+                  ]
 
+        # TODO:
+        # do i build it such that all are logged?
+        # i.e., if a POST is missin all fields, what is logged?
+
+        if len(values[0]) == 0:
+            error = 'Username Field cannot be blank'
+            status = False
+
+        elif len(values[1]) == 0:
+            error = 'Password Field cannot be blank'
+            status = False
+
+        elif len(values[2]) == 0:
+            error = 'Re-Enter Password Field cannot be blank'
+            status = False
+
+        elif len(values[3]) == 0:
+            error = 'Email Field cannot be blank'
+            status = False
+
+        # check password with re-entered password here
+        # to break off before it is even sent to DB
+        if values[1] != values[2]:
+            error = 'Passwords do not match'
+            status = False
+
+        if not status:
+            log(data= {'type_of_log': 'register_account',
+            'date_time': str(datetime.datetime.now()), 
+            'host': host,
+            'port': port,
+            'username': 'None', 
+            'status': error})
+
+            return render_template('create_account.html', error=error)
+        
         # TODO:
         # password complexity check
         # if not Complexity.test_password_complexity(values[1]):
@@ -362,9 +398,23 @@ def create_account():
             cursor.execute('INSERT INTO users VALUES (?, ?, ?)', values)
             sqliteConnection.commit()
             sqliteConnection.close()
+            log(data= {'type_of_log': 'register_account',
+            'date_time': str(datetime.datetime.now()), 
+            'host': host,
+            'port': port, 
+            'username': values[0], 
+            'status': 'Success'})
             return redirect(url_for('account_created_successfully'))
         else:
-            return render_template('create_account.html', error='Username already exists')
+            error = 'Username already exists'
+            log(data= {'type_of_log': 'register_account',
+            'date_time': str(datetime.datetime.now()), 
+            'host': host,
+            'port': port, 
+            'username': values[0], 
+            'status': error})
+
+            return render_template('create_account.html', error=error)
 
     return render_template('create_account.html', error='')
 
