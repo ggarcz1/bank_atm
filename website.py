@@ -22,7 +22,7 @@ ids = {}
 # returns true if value exists
 # TODO: remove the paramater 'database_name' as this function 
 # always connects to users.db
-def searchDB(database_name: str, username: str) -> bool:
+def search_users_DB(database_name: str, username: str) -> bool:
     sqliteConnection = sqlite3.connect(database='users.db')
     cursor = sqliteConnection.cursor()
     # check if user exists in the database
@@ -41,7 +41,7 @@ def getPassword(username: str) -> str:
     database_password = cursor.fetchall()
     return database_password[0][0]
 
-    # if searchDB(database_name='users.db', username=username):
+    # if search_users_DB(database_name='users.db', username=username):
     #     database_password = cursor.fetchall()
     #     return database_password[0][0]    
 
@@ -97,8 +97,6 @@ def log(data: dict) -> list:
                             f'{data["host"]}\t' \
                                 f'{data["port"]}\t' \
                                     f'{data["username"]}\t' \
-                                        f'{data["password_old"]}\t' \
-                                            f'{data["password_new"]}\t' \
                                                 f'{data["status"]}\n'
 
 
@@ -145,7 +143,7 @@ def log(data: dict) -> list:
     return error
 
 def get_account_details(username: str) -> str:      
-    if not searchDB('users.db', username=username):
+    if not search_users_DB('users.db', username=username):
         return None
     else:
         if username == 'admin':
@@ -168,7 +166,8 @@ def get_account_details(username: str) -> str:
             #string
             account_details['last_name'] = data[0][1]
             #double
-            account_details['balance'] = data[0][2]
+            account_details['balance'] = "{:,}".format(data[0][2])
+            # account_details['balance'] = data[0][2]
             #string
             account_details['email'] = data[0][3]
             #string of 10 digits and upper/lowercase characters
@@ -235,6 +234,23 @@ def failure_count():
         print()
     return None
 
+#TODO:
+def send_admin_logon_alert():
+    return
+
+def display(filename):
+    # if file exist
+    f = open(f'Logs//{filename}')
+    file_contents = ''
+    for each in f:
+        file_contents += f'{each}'
+
+    return file_contents
+
+# ----------------------------------------
+# begin webpages code 
+# ----------------------------------------
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     return render_template('home.html')
@@ -244,7 +260,11 @@ def review_logs():
     # check auth
     # MFA?
     f = open('Logs\\logs.txt')
-    return render_template('logs.html')
+    directory = 'Logs'  # Specify your directory here
+    files = os.listdir(directory)
+    files = [f for f in files if os.path.isfile(os.path.join(directory, f))]
+
+    return render_template('logs.html', files=files)
 
 @app.route('/login_page', methods=['GET', 'POST'])
 def login():
@@ -262,7 +282,7 @@ def login():
         elif len(password) == 0:
             return render_template('login_page.html', error='Password Field cannot be blank')
 
-        if searchDB('users.db', username) and password == getPassword(username):
+        if search_users_DB('users.db', username) and password == getPassword(username):
             session['user'] = username
             # true logon
             status = 'SUCCESS'
@@ -274,6 +294,10 @@ def login():
                     'username': username, 
                     'password': password,
                     'status': status})
+            #TODO:
+            # change this to be a flag from db
+            if username == 'admin' and password == 'admin':
+                send_admin_logon_alert()
 
             return redirect(url_for('logged_in'))
         else:
@@ -313,7 +337,7 @@ def logged_in():
     # session['id'] = generated_id
     # id[generated_id] = True
 
-    if not searchDB('users.db', username):
+    if not search_users_DB('users.db', username):
         session['logged_in'] = False
         return render_template('login_page.html', error='Incorrect Credentials.')
 
@@ -372,11 +396,11 @@ def create_account():
 
         if not status:
             log(data= {'type_of_log': 'register_account',
-            'date_time': str(datetime.datetime.now()), 
-            'host': host,
-            'port': port,
-            'username': 'None', 
-            'status': error})
+                'date_time': str(datetime.datetime.now()), 
+                    'host': host,
+                        'port': port,
+                            'username': 'None', 
+                                'status': error})
 
             return render_template('create_account.html', error=error)
         
@@ -392,7 +416,7 @@ def create_account():
         database_password = cursor.fetchall()
         found_username = len(database_password) != 0
 
-        # if not searchDB('users.db', username):
+        # if not search_users_DB('users.db', username):
         if not found_username:
             # insert new user into db
             cursor.execute('INSERT INTO users VALUES (?, ?, ?)', values)
@@ -408,11 +432,11 @@ def create_account():
         else:
             error = 'Username already exists'
             log(data= {'type_of_log': 'register_account',
-            'date_time': str(datetime.datetime.now()), 
-            'host': host,
-            'port': port, 
-            'username': values[0], 
-            'status': error})
+                'date_time': str(datetime.datetime.now()), 
+                    'host': host,
+                        'port': port, 
+                            'username': values[0], 
+                                'status': error})
 
             return render_template('create_account.html', error=error)
 
@@ -439,6 +463,13 @@ def reset_password():
             # do nothing
             a = 1
             # log error on server side
+            log(data= {'type_of_log': 'logon',
+                    'date_time': str(datetime.datetime.now()), 
+                    'host': host,
+                    'port': port, 
+                    'username': username, 
+                    'password': password,
+                    'status': status})
             log(email, pin, False)
 
     return redirect(url_for('post_post_pwd_reset'))
@@ -452,14 +483,34 @@ def account_created_successfully():
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     logged_out_user = session['user']
+    if logged_out_user is None or logged_out_user == 'None':
+        log(data= {'type_of_log': 'logout',
+                    'date_time': str(datetime.datetime.now()), 
+                        'host': host,
+                            'port': port, 
+                                'username': 'None', 
+                                        'status': 'Error. user "None" tried to logout.'})
+        # return redirect('login_page.html', )
+        return render_template('login_page.html', error='Error. user "None" tried to logout.')
+
     session['user'] = None
     session['logged_in'] = False
-    idz = session['id']
-    global id
-    id.pop(session['id'])
-    session['id'] = 'None'
 
-    return render_template('logged_out.html', logged_out_user=idz)
+    status = 'Failure'
+
+    if session['user'] == None:
+        status = 'Success'
+    else:
+        status = 'Failure'
+
+    log(data= {'type_of_log': 'logout',
+                    'date_time': str(datetime.datetime.now()), 
+                        'host': host,
+                            'port': port, 
+                                'username': logged_out_user, 
+                                        'status': status})
+    
+    return render_template('logged_out.html', logged_out_user=logged_out_user)
 
 
 if __name__ == '__main__':

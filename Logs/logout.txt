@@ -1,0 +1,7 @@
+logout	2024-08-23 14:37:09.791735	127.0.22.1	9999	None	Success
+logout	2024-08-23 14:37:11.951235	127.0.22.1	9999	None	Success
+logout	2024-08-23 14:37:32.800840	127.0.22.1	9999	None	Success
+logout	2024-08-23 14:38:14.251919	127.0.22.1	9999	admin	Success
+logout	2024-08-23 14:41:01.340081	127.0.22.1	9999	None	Error. user "None" tried to logout.
+logout	2024-08-23 14:41:15.021321	127.0.22.1	9999	None	Error. user "None" tried to logout.
+logout	2024-08-23 14:41:24.309086	127.0.22.1	9999	admin	Success

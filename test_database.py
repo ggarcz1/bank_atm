@@ -81,7 +81,8 @@ def users():
     sqliteConnection.commit()
     sqliteConnection.close()
 
-
-
+print('Account Data\n#######################################')
 account_data()
-# users()
+
+print('Users\n#######################################')
+users()
