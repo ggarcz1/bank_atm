@@ -360,7 +360,7 @@ def logged_in():
 @app.route('/create_account', methods=['GET', 'POST'])
 def create_account():
     if request.method == 'POST':
-        error = username = None
+        error = ''
         status = True
         values = [request.form['username'],
                   request.form['password'],
@@ -370,7 +370,8 @@ def create_account():
 
         # TODO:
         # do i build it such that all are logged?
-        # i.e., if a POST is missin all fields, what is logged?
+        # i.e., if a POST is missing all fields, what is logged?
+        # currently only username is logged.  this may suffice
 
         if len(values[0]) == 0:
             error = 'Username Field cannot be blank'
@@ -423,11 +424,11 @@ def create_account():
             sqliteConnection.commit()
             sqliteConnection.close()
             log(data= {'type_of_log': 'register_account',
-            'date_time': str(datetime.datetime.now()), 
-            'host': host,
-            'port': port, 
-            'username': values[0], 
-            'status': 'Success'})
+                        'date_time': str(datetime.datetime.now()), 
+                            'host': host,
+                                'port': port, 
+                                    'username': values[0], 
+                                        'status': 'Success'})
             return redirect(url_for('account_created_successfully'))
         else:
             error = 'Username already exists'
@@ -439,7 +440,7 @@ def create_account():
                                 'status': error})
 
             return render_template('create_account.html', error=error)
-
+    
     return render_template('create_account.html', error='')
 
 
@@ -464,15 +465,15 @@ def reset_password():
             a = 1
             # log error on server side
             log(data= {'type_of_log': 'logon',
-                    'date_time': str(datetime.datetime.now()), 
-                    'host': host,
-                    'port': port, 
-                    'username': username, 
-                    'password': password,
-                    'status': status})
+                        'date_time': str(datetime.datetime.now()), 
+                            'host': host,
+                                'port': port, 
+                                    'username': username, 
+                                        'password': password,
+                                            'status': status})
             log(email, pin, False)
 
-    return redirect(url_for('post_post_pwd_reset'))
+    return redirect(url_for('reset_password'))
 
 
 @app.route('/account_created_successfully', methods=['GET', 'POST'])

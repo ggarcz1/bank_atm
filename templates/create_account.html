@@ -12,11 +12,18 @@
   <label for="email">Email: </label>
   <input type="text" id="email" name="email"><br><br>
   <input type="submit" value="Submit">
-  <p></p>
+  
+  <form method="get" action="/login_page">
+    <b>Login: </b>
+  <input type="submit" value="Login">
+  </form> 
+     <p></p>
+
   {% if error %}
     <b>ERROR: {{error}}</b>
   {% endif %}
 </form> 
+
 
 </body>
 </html>
