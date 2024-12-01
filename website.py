@@ -259,7 +259,8 @@ def home():
 def review_logs():
     # check auth
     # MFA?
-    f = open('Logs\\logs.txt')
+    # whitelist IP and/or MAC here
+
     directory = 'Logs'  # Specify your directory here
     files = os.listdir(directory)
     files = [f for f in files if os.path.isfile(os.path.join(directory, f))]
@@ -355,6 +356,34 @@ def logged_in():
                            email=account_details['email'],
                            zipcode=account_details['zipcode']
                            )
+
+@app.route('/withdraw', methods=['GET', 'POST'])
+def withdraw():
+    if logged_in():
+        if request.method == 'POST':
+            amount = request.form['amount']
+            account = request.form['account']
+            pin = request.form['pin']
+            # send encrypted
+            return render_template('withdraw_success.html', account=account,amount=amount)
+    else:
+        return render_template('withdraw.html')
+    
+    return render_template('withdraw.html')
+
+@app.route('/deposit', methods=['GET', 'POST'])
+def deposit():
+    if logged_in():
+        if request.method == 'POST':
+            amount = request.form['amount']
+            account = request.form['account']
+            pin = request.form['pin']
+            # send encrypted
+            return render_template('deposit_success.html', account=account,amount=amount)
+    else:
+        return render_template('deposit.html')
+    
+    return render_template('deposit.html')
 
 
 @app.route('/create_account', methods=['GET', 'POST'])

@@ -23,5 +23,13 @@
             </ul>
     </body>
 
+    <body>
+        <h1>Download a Backup File</h1>
+        {% for file in files %}
+                <li><a href="file" download>{{ file }} </a></li>
+        {% endfor %}
+        <a href="example-file.pdf" download>Download File</a>
+    </body>
+
 </body>
 </html>
