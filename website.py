@@ -33,7 +33,7 @@ def search_users_DB(database_name: str, username: str) -> bool:
 
 
 def getPassword(username: str) -> str:
-    # should always be 'users.db'
+    # should always be 'users.db' --> remediated
     sqliteConnection = sqlite3.connect('users.db')
     cursor = sqliteConnection.cursor()
     # check if user exists in the database already    
@@ -364,8 +364,20 @@ def withdraw():
             amount = request.form['amount']
             account = request.form['account']
             pin = request.form['pin']
-            # send encrypted
-            return render_template('withdraw_success.html', account=account,amount=amount)
+            # send encrypted            
+
+            #TODO:
+            # need the current logged in user to ensure no malicious replays
+            
+            # first_name, last_name, balance, email, account_number, pin, zipcode
+            sqliteConnection = sqlite3.connect(database='account_details.db')
+            cursor = sqliteConnection.cursor()
+            # check if user exists in the database
+            cursor.execute('SELECT * FROM account_details WHERE account=?,pin=? ', (account,pin))
+            database_results = cursor.fetchall()
+            print(database_results)
+
+        return render_template('withdraw_success.html', account=account,amount=amount)
     else:
         return render_template('withdraw.html')
     

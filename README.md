@@ -24,3 +24,13 @@ Steps to run:
 6. check for potential SQL injections via the logs (SQLMap)
 7. Encrypt database usernames and passwords
 8. Logging method
+
+
+## Accounts Loaded For Database (account_details.db) testing \
+```first_name, last_name, balance, email, account_number, pin, zipcode```
+
+```
+('tom', 'tom', 43232.82, 'tom@tom.com', 839284661, 8392, 75234)
+('admin', 'admin', None, 'admin@admin.com', None, None, None)
+('JOE', 'doe', 100.0, 'joe@joe.com', 123456789, 1234, 12345)
+```
