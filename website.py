@@ -4,7 +4,7 @@ import datetime
 import os
 import random
 import re
-from complexity import Complexity
+# from complexity import Complexity
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -70,7 +70,7 @@ def log(data: dict) -> list:
 
     # TODO: add lengths for additional check
     if type_of_log == 'logon' and data_length == 7:
-        file_name = path+'logs.txt'
+        file_name = path+'logon_logs.txt'
         logText = f'{data["type_of_log"]}\t' \
                     f'{data["date_time"]}\t' \
                         f'{data["host"]}\t' \
@@ -286,7 +286,7 @@ def login():
         if search_users_DB('users.db', username) and password == getPassword(username):
             session['user'] = username
             # true logon
-            status = 'SUCCESS'
+            # status = 'SUCCESS'
             # logon --> 7 --> logtype, datetime, host, port, username, password, status
             log(data= {'type_of_log': 'logon',
                     'date_time': str(datetime.datetime.now()), 
@@ -294,15 +294,16 @@ def login():
                     'port': port, 
                     'username': username, 
                     'password': password,
-                    'status': status})
+                    'status': 'SUCCESS'})
             #TODO:
-            # change this to be a flag from db
+            # change this to be a flag or something from db
+            # cant be hardcoded lol
             if username == 'admin' and password == 'admin':
                 send_admin_logon_alert()
 
             return redirect(url_for('logged_in'))
         else:
-            status = 'FAILURE'
+            # status = 'FAILURE'
             # TODO: failure count
             # failure_count += 1
             log(data= {'type_of_log': 'logon',
@@ -311,7 +312,7 @@ def login():
                     'port': port, 
                     'username': username, 
                     'password': password,
-                    'status': status})
+                    'status': 'FAILURE'})
             return render_template('login_page.html', error='Incorrect Credentials.')
 
     return render_template('login_page.html')
@@ -558,6 +559,8 @@ def logout():
 if __name__ == '__main__':
     ## HTTPS item
     #    app.run(ssl_context=('cert.pem', 'key.pem'), host='127.0.0.1')
-    host = '127.0.22.1'
-    port = '9999'
+    # host = '127.0.22.1'
+    # port = '9999'
+    host = '0.0.0.0'
+    port = '5000'
     app.run(host=f'{host}', port=f'{port}')
