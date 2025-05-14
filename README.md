@@ -8,7 +8,7 @@ Steps to run:
 2. Move the folder to the appropriate directory
 3. Run `pip install -r requirements.txt`
 4. Run `python ./website.py`
-5. Vist associated host and port, default is <http://127.0.0.1:5000>
+5. Vist associated host and port, default is ```http://127.0.0.1:5000```
 
 `python_login.py` is a auto login/add new user based on requests library
 

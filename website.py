@@ -4,6 +4,7 @@ import datetime
 import os
 import random
 import re
+# import redis
 # from complexity import Complexity
 
 app = Flask(__name__)
@@ -44,6 +45,7 @@ def getPassword(username: str) -> str:
     # if search_users_DB(database_name='users.db', username=username):
     #     database_password = cursor.fetchall()
     #     return database_password[0][0]    
+
 
 # TODO:
 def log(data: dict) -> list:
@@ -247,6 +249,42 @@ def display(filename):
 
     return file_contents
 
+#TO Implement:
+def generate_session_id():
+    return secrets.token_hex(32) 
+
+def create_session(user_id, expiration=1800):  # Expiration in seconds (30 mins)
+    session_id = generate_session_id()
+    redis_client.setex(session_id, expiration, user_id)  # Store session with TTL
+    return session_id
+
+def get_user_from_session(session_id):
+    user_id = redis_client.get(session_id)
+    return user_id  # Returns None if session is invalid or expired
+
+def refresh_session(session_id, new_expiration=1800):
+    if redis_client.exists(session_id):
+        redis_client.expire(session_id, new_expiration)  # Reset expiration
+        return True
+    return False
+
+def delete_session(session_id):
+    redis_client.delete(session_id)  # Remove session from Redis
+    
+def create_unique_session(user_id, expiration=1800):
+    session_id = generate_session_id()
+
+    # Check if user already has a session and delete it
+    existing_session = redis_client.get(f"user:{user_id}:session")
+    if existing_session:
+        redis_client.delete(existing_session)
+
+    # Store new session
+    redis_client.setex(session_id, expiration, user_id)
+    redis_client.setex(f"user:{user_id}:session", expiration, session_id)  # Track session by user
+
+    return session_id
+
 # ----------------------------------------
 # begin webpages code 
 # ----------------------------------------
@@ -283,6 +321,7 @@ def login():
         elif len(password) == 0:
             return render_template('login_page.html', error='Password Field cannot be blank')
 
+        # TODO: hash the password here?
         if search_users_DB('users.db', username) and password == getPassword(username):
             session['user'] = username
             # true logon
@@ -300,20 +339,19 @@ def login():
             # cant be hardcoded lol
             if username == 'admin' and password == 'admin':
                 send_admin_logon_alert()
-
-            return redirect(url_for('logged_in'))
-        else:
-            # status = 'FAILURE'
-            # TODO: failure count
-            # failure_count += 1
-            log(data= {'type_of_log': 'logon',
-                    'date_time': str(datetime.datetime.now()), 
-                    'host': host,
-                    'port': port, 
-                    'username': username, 
-                    'password': password,
-                    'status': 'FAILURE'})
-            return render_template('login_page.html', error='Incorrect Credentials.')
+                return redirect(url_for('logged_in'))
+            else:
+                # status = 'FAILURE'
+                # TODO: failure count
+                # failure_count += 1
+                log(data= {'type_of_log': 'logon',
+                        'date_time': str(datetime.datetime.now()), 
+                        'host': host,
+                        'port': port, 
+                        'username': username, 
+                        'password': password,
+                        'status': 'FAILURE'})
+                return render_template('login_page.html', error='Incorrect Credentials.')
 
     return render_template('login_page.html')
 
