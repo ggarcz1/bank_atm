@@ -1,35 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Backup Files</title>
-</head>
-<body>
-    <!-- <h1>Backup Files</h1>
+    <h1>Available .txt Files</h1>
     <ul>
-    {% for file in files %}
-        <li><a href="{{ url_for('static', filename='Logs/' + file) }}">{{ file }} </a></li>
-    {% endfor %}
-    </ul> -->
-
-
-    <body>
-        <h1>Download a Backup File</h1>
-        <ul>
-            {% for file in files %}
-                <li><a href="../Logs/' + file" download=file>{{ file }} </a></li>
-            {% endfor %}
-            </ul>
-    </body>
-
-    <body>
-        <h1>Download a Backup File</h1>
         {% for file in files %}
-                <li><a href="file" download>{{ file }} </a></li>
+        <li><a href="/files/{{ file }}">{{ file }}</a></li>
         {% endfor %}
-        <a href="example-file.pdf" download>Download File</a>
-    </body>
-
-</body>
-</html>
+    </ul>

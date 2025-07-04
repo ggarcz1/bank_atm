@@ -1,4 +1,5 @@
 from flask import Flask, session, render_template, redirect, request, url_for
+from flask import Flask, send_from_directory, render_template_string
 import sqlite3
 import datetime
 import os
@@ -6,7 +7,7 @@ import random
 import re
 # import redis
 # from complexity import Complexity
-
+FILES_DIR = 'Logs'
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
@@ -296,14 +297,21 @@ def home():
 @app.route('/review_logs', methods=['GET'])
 def review_logs():
     # check auth
-    # MFA?
-    # whitelist IP and/or MAC here
+    txt_files = [f for f in os.listdir(FILES_DIR) if f.endswith(".txt")]
+    html = """
+    <h1>Available .txt Files</h1>
+    <ul>
+        {% for file in files %}
+        <li><a href="/Logs/{{ file }}">{{ file }}</a></li>
+        {% endfor %}
+    </ul>
+    """
+    return render_template_string(html, files=txt_files)
 
-    directory = 'Logs'  # Specify your directory here
-    files = os.listdir(directory)
-    files = [f for f in files if os.path.isfile(os.path.join(directory, f))]
-
-    return render_template('logs.html', files=files)
+@app.route("/Logs/<path:filename>")
+def download_file(filename):
+    # Secure: prevents directory traversal
+    return send_from_directory(FILES_DIR, filename, as_attachment=True)
 
 @app.route('/login_page', methods=['GET', 'POST'])
 def login():
@@ -538,8 +546,8 @@ def reset_password():
             # log on server side
             log(email, pin, True)
             a = 1
-            msg = Message('Password Reset', recipients=[email])
-            mail.send(msg)
+            # msg = Message('Password Reset', recipients=[email])
+            # mail.send(msg)
         else:
             # do nothing
             a = 1
